@@ -4,4 +4,24 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "google-genai",
+    "psycopg2-binary",
+    "python-dotenv",
+    "pandas",
+    "sqlalchemy",
+    "langchain",
+    "langchain-google-genai",
+    "langgraph",
+    "transformers",
+    "torch",
+    "datasets",
+    "openpyxl",
+    "fastapi",
+    "uvicorn",
+    "python-multipart",
+    "alembic",
+    "python-jose[cryptography]",
+    "passlib[bcrypt]",
+]
+
