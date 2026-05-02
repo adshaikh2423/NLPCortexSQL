@@ -269,10 +269,10 @@
 
 .lp-stack-card-inner {
   height: 100%;
-  display: flex;
+  display: grid;
+  grid-template-columns: 380px 1fr;
   align-items: center;
-  gap: 4rem;
-  padding: 4rem 10%;
+  gap: 0;
   position: relative;
   overflow: hidden;
 }
@@ -281,43 +281,50 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 0% 50%, var(--card-color, #e100ff) 0%, transparent 60%);
-  opacity: 0.08;
+  background: radial-gradient(circle at 30% 50%, var(--card-color, #e100ff) 0%, transparent 55%);
+  opacity: 0.07;
   pointer-events: none;
 }
 
-.lp-stack-card-icon {
-  font-size: 6rem;
+.lp-stack-card-img-wrap {
+  height: 100%;
+  overflow: hidden;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 40px var(--card-color, #e100ff));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.2);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.lp-stack-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
+}
+
+.lp-stack-card-text {
+  padding: 3.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .lp-stack-card-title {
-  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
   font-weight: 900;
   margin-bottom: 1.2rem;
-  letter-spacing: -1.5px;
+  letter-spacing: -1px;
   color: var(--card-color, #e100ff);
+  line-height: 1.1;
 }
 
 .lp-stack-card-desc {
-  font-size: 1.15rem;
-  color: rgba(255,255,255,0.5);
-  line-height: 1.75;
-  max-width: 600px;
-}
-
-.lp-stack-card-index {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 8rem;
-  font-weight: 900;
-  color: rgba(255,255,255,0.03);
-  letter-spacing: -4px;
-  user-select: none;
-  pointer-events: none;
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.8;
+  max-width: 480px;
 }
 
 /* ── Footer ───────────────────────────────────── */

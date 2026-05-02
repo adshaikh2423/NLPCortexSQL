@@ -2,29 +2,33 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack/ScrollStack';
+import imgMultiAgent from '../assets/card_multi_agent.png';
+import imgSelfHeal from '../assets/card_self_healing.png';
+import imgSchema from '../assets/card_schema_memory.png';
+import imgSecure from '../assets/card_secure_exec.png';
 import './LandingPage.css';
 
 const STACK_CARDS = [
   {
-    emoji: '⚡',
+    img: imgMultiAgent,
     title: 'Multi-Agent Reasoning',
     desc: '5 specialized agents — Supervisor, Reasoner, SQL Agent, Reflector & Formatter — working in perfect sync to process every query autonomously.',
     color: '#e100ff',
   },
   {
-    emoji: '🛡️',
+    img: imgSelfHeal,
     title: 'Self-Healing Loop',
     desc: 'When an error occurs, the Reflector agent reads the traceback, corrects the SQL, and re-executes — all without any user intervention.',
     color: '#7f00ff',
   },
   {
-    emoji: '🧠',
+    img: imgSchema,
     title: 'Semantic Schema Memory',
     desc: "Upload any CSV or Excel file and the system instantly maps the schema into the AI's working memory, making it immediately queryable.",
     color: '#b8b8ff',
   },
   {
-    emoji: '🔒',
+    img: imgSecure,
     title: 'Secure Execution Layer',
     desc: "Every SQL query is validated against the user's registered schema before execution, preventing unauthorized access to any data.",
     color: '#cf6fff',
@@ -174,12 +178,13 @@ LIMIT 5;`}</pre>
                   onMouseEnter={() => setHovered(i)}
                   onMouseLeave={() => setHovered(null)}
                 >
-                  <div className="lp-stack-card-icon">{card.emoji}</div>
-                  <div>
+                  <div className="lp-stack-card-img-wrap">
+                    <img src={card.img} alt={card.title} className="lp-stack-card-img" />
+                  </div>
+                  <div className="lp-stack-card-text">
                     <h3 className="lp-stack-card-title">{card.title}</h3>
                     <p className="lp-stack-card-desc">{card.desc}</p>
                   </div>
-                  <div className="lp-stack-card-num">0{i + 1}</div>
                 </div>
               </ScrollStackItem>
             ))}
