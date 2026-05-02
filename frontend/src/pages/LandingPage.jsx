@@ -1,30 +1,38 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import SoftAurora from '../components/SoftAurora/SoftAurora'
-import './LandingPage.css'
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import SoftAurora from '../components/SoftAurora/SoftAurora';
+import ScrollStack, { ScrollStackItem } from '../components/ScrollStack/ScrollStack';
+import './LandingPage.css';
 
-const NAV_LINKS = ['Features', 'Architecture', 'Docs']
-
-const FEATURES = [
+const STACK_CARDS = [
   {
-    icon: '⚡',
+    emoji: '⚡',
     title: 'Multi-Agent Reasoning',
-    desc: '5 specialized agents working in sync to plan, reflect, and execute SQL queries autonomously.',
+    desc: '5 specialized agents — Supervisor, Reasoner, SQL Agent, Reflector & Formatter — working in perfect sync to process every query autonomously.',
+    color: '#e100ff',
   },
   {
-    icon: '🛡️',
+    emoji: '🛡️',
     title: 'Self-Healing Loop',
-    desc: 'Autonomous error recovery from database tracebacks with zero user intervention.',
+    desc: 'When an error occurs, the Reflector agent reads the traceback, corrects the SQL, and re-executes — all without any user intervention.',
+    color: '#7f00ff',
   },
   {
-    icon: '🧠',
-    title: 'Semantic Knowledge',
-    desc: 'Instant schema mapping from CSV/Excel directly into the AI neural memory.',
+    emoji: '🧠',
+    title: 'Semantic Schema Memory',
+    desc: 'Upload any CSV or Excel file and the system instantly maps the schema into the AI\'s working memory, making it immediately queryable.',
+    color: '#b8b8ff',
   },
-]
+  {
+    emoji: '🔒',
+    title: 'Secure Execution Layer',
+    desc: 'Every SQL query is validated against the user\'s registered schema before execution, preventing unauthorized access to any data.',
+    color: '#cf6fff',
+  },
+];
 
 export default function LandingPage({ onGetStarted }) {
-  const [hovered, setHovered] = useState(null)
+  const [hovered, setHovered] = useState(null);
 
   return (
     <div className="lp-root">
@@ -58,9 +66,9 @@ export default function LandingPage({ onGetStarted }) {
           NLPCortexSQL
         </div>
         <div className="lp-nav-links">
-          {NAV_LINKS.map(l => (
-            <a key={l} href={`#${l.toLowerCase()}`} className="lp-nav-link">{l}</a>
-          ))}
+          <a href="#features" className="lp-nav-link">Features</a>
+          <a href="#architecture" className="lp-nav-link">Architecture</a>
+          <a href="#docs" className="lp-nav-link">Docs</a>
           <button className="lp-btn-outline" onClick={onGetStarted}>Launch App →</button>
         </div>
       </nav>
@@ -84,7 +92,7 @@ export default function LandingPage({ onGetStarted }) {
 
           <h1 className="lp-hero-title">
             Talk to Your Data<br />
-            <span className="lp-hero-gradient">Like It's Human</span>
+            <span className="lp-hero-gradient">Like It&apos;s Human</span>
           </h1>
 
           <p className="lp-hero-sub">
@@ -128,7 +136,7 @@ export default function LandingPage({ onGetStarted }) {
             <span className="lp-card-title">cortex-agent · live</span>
           </div>
           <div className="lp-card-body">
-            <p className="lp-card-query">&gt; &quot;Show me top 5 products by revenue this quarter&quot;</p>
+            <p className="lp-card-query">&gt; &quot;Show top 5 products by revenue this quarter&quot;</p>
             <div className="lp-card-steps">
               <p className="lp-step done">✓ Supervisor: Task delegated</p>
               <p className="lp-step done">✓ Reasoner: Schema analyzed</p>
@@ -146,30 +154,53 @@ LIMIT 5;`}</pre>
         </motion.div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="lp-features">
-        {FEATURES.map((f, i) => (
-          <motion.div
-            key={f.title}
-            className={`lp-feature-card ${hovered === i ? 'lp-feature-card--active' : ''}`}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.15 }}
-            onMouseEnter={() => setHovered(i)}
-            onMouseLeave={() => setHovered(null)}
+      {/* Scroll Stack Features Section */}
+      <section id="features" className="lp-stack-section">
+        <motion.div
+          className="lp-stack-header"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="lp-section-title">Built Different</h2>
+          <p className="lp-section-sub">Scroll through the intelligence layers that power NLPCortexSQL</p>
+        </motion.div>
+
+        <div className="lp-stack-wrapper">
+          <ScrollStack
+            itemDistance={120}
+            itemScale={0.06}
+            itemStackDistance={40}
+            stackPosition="25%"
+            scaleEndPosition="10%"
+            baseScale={0.88}
+            blurAmount={1}
           >
-            <div className="lp-feature-icon">{f.icon}</div>
-            <h3 className="lp-feature-title">{f.title}</h3>
-            <p className="lp-feature-desc">{f.desc}</p>
-          </motion.div>
-        ))}
+            {STACK_CARDS.map((card, i) => (
+              <ScrollStackItem key={card.title}>
+                <div
+                  className="lp-stack-card-inner"
+                  style={{ '--card-color': card.color }}
+                  onMouseEnter={() => setHovered(i)}
+                  onMouseLeave={() => setHovered(null)}
+                >
+                  <div className="lp-stack-card-icon">{card.emoji}</div>
+                  <div>
+                    <h3 className="lp-stack-card-title">{card.title}</h3>
+                    <p className="lp-stack-card-desc">{card.desc}</p>
+                  </div>
+                  <div className="lp-stack-card-index">0{i + 1}</div>
+                </div>
+              </ScrollStackItem>
+            ))}
+          </ScrollStack>
+        </div>
       </section>
 
       {/* Footer */}
       <footer className="lp-footer">
-        <p>© 2025 NLPCortexSQL · Built with FastAPI, LangGraph & React</p>
+        <p>© 2025 NLPCortexSQL · Built with FastAPI, LangGraph &amp; React</p>
       </footer>
     </div>
-  )
+  );
 }

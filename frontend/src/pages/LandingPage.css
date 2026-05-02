@@ -39,7 +39,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.2rem 6%;
-  background: rgba(5, 5, 8, 0.6);
+  background: rgba(5, 5, 8, 0.65);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
@@ -170,7 +170,6 @@
 .lp-btn-primary:hover {
   box-shadow: 0 0 30px rgba(255,255,255,0.2);
 }
-
 .lp-btn-arrow { font-size: 1.2rem; }
 
 .lp-btn-ghost {
@@ -209,10 +208,7 @@
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
 
-.lp-dot {
-  width: 11px; height: 11px;
-  border-radius: 50%;
-}
+.lp-dot { width: 11px; height: 11px; border-radius: 50%; }
 .lp-dot-r { background: #ff5f56; }
 .lp-dot-y { background: #ffbd2e; }
 .lp-dot-g { background: #27c93f; }
@@ -237,12 +233,7 @@
   color: #cf6fff;
 }
 
-.lp-card-steps {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
+.lp-card-steps { display: flex; flex-direction: column; gap: 0.35rem; }
 .lp-step {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.78rem;
@@ -264,42 +255,93 @@
   white-space: pre;
 }
 
-/* ── Features ─────────────────────────────────── */
-.lp-features {
+/* ── Scroll Stack Section ─────────────────────── */
+.lp-stack-section {
   position: relative;
   z-index: 10;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  padding: 0 6% 100px;
+  padding: 0 6%;
 }
 
-.lp-feature-card {
-  background: rgba(255,255,255,0.025);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-radius: 1.25rem;
-  padding: 2rem;
-  transition: border-color 0.3s, background 0.3s;
-  cursor: default;
-}
-.lp-feature-card--active {
-  border-color: rgba(225, 0, 255, 0.3);
-  background: rgba(225, 0, 255, 0.05);
+.lp-stack-header {
+  text-align: center;
+  padding: 80px 0 40px;
 }
 
-.lp-feature-icon {
-  font-size: 2rem;
-  margin-bottom: 1.2rem;
+.lp-section-title {
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #fff 40%, rgba(255,255,255,0.4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
-.lp-feature-title {
-  font-size: 1.2rem;
-  font-weight: 700;
+
+.lp-section-sub {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.4);
+}
+
+.lp-stack-wrapper {
+  height: 80vh;
+  max-width: 900px;
+  margin: 0 auto;
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+/* ── Stack Card Innards ───────────────────────── */
+.lp-stack-card-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-stack-card-inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 0% 50%, var(--card-color, #e100ff) 0%, transparent 60%);
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.lp-stack-card-icon {
+  font-size: 3.5rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 20px var(--card-color, #e100ff));
+}
+
+.lp-stack-card-title {
+  font-size: 1.8rem;
+  font-weight: 800;
   margin-bottom: 0.75rem;
+  letter-spacing: -0.5px;
+  color: var(--card-color, #e100ff);
 }
-.lp-feature-desc {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.45);
-  line-height: 1.65;
+
+.lp-stack-card-desc {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.75;
+  max-width: 520px;
+}
+
+.lp-stack-card-index {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 8rem;
+  font-weight: 900;
+  color: rgba(255,255,255,0.03);
+  letter-spacing: -4px;
+  user-select: none;
+  pointer-events: none;
 }
 
 /* ── Footer ───────────────────────────────────── */
@@ -307,7 +349,7 @@
   position: relative;
   z-index: 10;
   text-align: center;
-  padding: 2rem;
+  padding: 4rem 2rem;
   font-size: 0.8rem;
   color: rgba(255,255,255,0.2);
   border-top: 1px solid rgba(255,255,255,0.05);
@@ -323,5 +365,6 @@
   .lp-hero-sub { margin: 0 auto 3rem; }
   .lp-hero-actions { justify-content: center; }
   .lp-hero-card { max-width: 560px; margin: 0 auto; }
-  .lp-features { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+  .lp-stack-wrapper { height: 70vh; }
+  .lp-nav-links { gap: 1rem; }
 }
