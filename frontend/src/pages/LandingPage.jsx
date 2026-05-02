@@ -69,12 +69,7 @@ export default function LandingPage({ onGetStarted }) {
           <span className="lp-nav-dot" />
           NLPCortexSQL
         </div>
-        <div className="lp-nav-links">
-          <a href="#features" className="lp-nav-link">Features</a>
-          <a href="#architecture" className="lp-nav-link">Architecture</a>
-          <a href="#docs" className="lp-nav-link">Docs</a>
-          <button className="lp-btn-outline" onClick={onGetStarted}>Launch App →</button>
-        </div>
+        <button className="lp-btn-outline" onClick={onGetStarted}>Launch App →</button>
       </nav>
 
       {/* Hero */}
