@@ -20,8 +20,8 @@
   position: relative;
 
   /* Card dimensions */
-  height: 72vh;
-  width: calc(100% - 8rem);
+  height: 62vh;
+  width: calc(100% - 12rem);
   margin: 0 auto;
   box-sizing: border-box;
 

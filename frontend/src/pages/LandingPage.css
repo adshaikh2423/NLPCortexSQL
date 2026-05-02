@@ -105,13 +105,13 @@
 /* ── Hero ─────────────────────────────────────── */
 .lp-hero {
   position: relative;
-  z-index: 10;
-  min-height: 100vh;
+  z-index: 5;
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   align-items: center;
   gap: 4rem;
-  padding: 140px 6% 80px;
+  padding: 8rem 6% 4rem;
+  min-height: 80vh;
 }
 
 .lp-badge {
@@ -160,7 +160,7 @@
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  padding: 1rem 2.5rem;
+  padding: 0.8rem 2rem;
   background: #fff;
   color: #050508;
   border: none;
@@ -180,7 +180,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 1rem 2rem;
+  padding: 0.8rem 2rem;
   background: rgba(255,255,255,0.05);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 0.75rem;
@@ -207,7 +207,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.9rem 1.2rem;
+  padding: 0.8rem 1.2rem;
   background: rgba(255,255,255,0.04);
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
@@ -225,7 +225,7 @@
 }
 
 .lp-card-body {
-  padding: 1.5rem;
+  padding: 1.2rem;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -263,7 +263,7 @@
   background: rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 0.75rem;
-  padding: 1.2rem;
+  padding: 1rem;
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.78rem;
   line-height: 1.7;
@@ -322,7 +322,7 @@
 }
 
 .lp-stack-card-text {
-  padding: 3.5rem 4rem;
+  padding: 3rem 4rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -343,7 +343,7 @@
   color: rgba(255,255,255,0.5);
   line-height: 1.8;
   max-width: 480px;
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .lp-stack-card-stats {
@@ -385,7 +385,7 @@
 
 /* ── CTA Section ──────────────────────────────── */
 .lp-cta-section {
-  padding: 3rem 6% 8rem;
+  padding: 2rem 6% 4rem;
   text-align: center;
   position: relative;
   z-index: 20;
@@ -395,7 +395,7 @@
   font-family: var(--font-title);
   font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1;
   letter-spacing: -2px;
   margin-bottom: 1.5rem;
 }
