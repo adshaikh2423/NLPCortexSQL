@@ -153,8 +153,8 @@ export default function LandingPage({ onGetStarted }) {
       <section id="features" className="lp-stack-section">
         <div className="lp-stack-wrapper">
           <ScrollStack
-            itemDistance={120} itemScale={0.04}
-            itemStackDistance={30} stackPosition="15%"
+            itemDistance={100} itemScale={0.04}
+            itemStackDistance={25} stackPosition="12%"
             scaleEndPosition="5%" baseScale={0.9}
             blurAmount={0} useWindowScroll
           >
