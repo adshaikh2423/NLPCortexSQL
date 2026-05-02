@@ -385,8 +385,7 @@
 
 /* ── CTA Section ──────────────────────────────── */
 .lp-cta-section {
-  padding: 0 6% 8rem;
-  margin-top: -6rem;
+  padding: 8rem 6%;
   text-align: center;
   position: relative;
   z-index: 20;

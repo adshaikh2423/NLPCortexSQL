@@ -151,7 +151,7 @@ const ScrollStack = ({
     <div className={`scroll-stack-scroller ${className}`.trim()} ref={scrollerRef}>
       <div className="scroll-stack-inner">
         {children}
-        <div className="scroll-stack-end" style={{ height: '1px' }} />
+        <div className="scroll-stack-end" style={{ height: '1px', marginTop: '30vh' }} />
       </div>
     </div>
   );
