@@ -1,0 +1,42 @@
+.tw-code-block {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+  padding: 1.4rem 1.6rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.82rem;
+  line-height: 2;
+  min-height: 10rem;
+}
+
+.tw-line {
+  white-space: pre;
+  display: block;
+}
+
+.tw-line--done {
+  color: #a9b7c6;
+}
+
+.tw-line--active {
+  color: #c9d8e4;
+  display: flex;
+  align-items: center;
+}
+
+.tw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: #e100ff;
+  margin-left: 1px;
+  border-radius: 1px;
+  animation: blink 0.9s step-end infinite;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}

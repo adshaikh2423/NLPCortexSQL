@@ -120,22 +120,23 @@ const ScrollStack = ({
         translateY = pinEnd - cardTop + stackPositionPx + itemStackDistance * i;
       }
 
+      // NO ROUNDING to avoid jitter
       const newTransform = {
-        translateY: Math.round(translateY * 100) / 100,
-        scale: Math.round(scale * 1000) / 1000,
-        rotation: Math.round(rotation * 100) / 100,
-        blur: Math.round(blur * 100) / 100
+        translateY: translateY,
+        scale: scale,
+        rotation: rotation,
+        blur: blur
       };
 
       const lastTransform = lastTransformsRef.current.get(i);
+      // Tiny threshold to prevent unnecessary updates but large enough to stop jitter
       const hasChanged =
         !lastTransform ||
-        Math.abs(lastTransform.translateY - newTransform.translateY) > 0.1 ||
-        Math.abs(lastTransform.scale - newTransform.scale) > 0.001 ||
-        Math.abs(lastTransform.rotation - newTransform.rotation) > 0.1 ||
-        Math.abs(lastTransform.blur - newTransform.blur) > 0.1;
+        Math.abs(lastTransform.translateY - newTransform.translateY) > 0.01 ||
+        Math.abs(lastTransform.scale - newTransform.scale) > 0.0001;
 
       if (hasChanged) {
+        // Use translate3d for hardware acceleration
         card.style.transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
         card.style.filter = newTransform.blur > 0 ? `blur(${newTransform.blur}px)` : '';
         lastTransformsRef.current.set(i, newTransform);
@@ -160,28 +161,26 @@ const ScrollStack = ({
   ]);
 
   const handleScroll = useCallback(() => {
-    updateCardTransforms();
+    // Only update if requested to avoid frame mismatch
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    animationFrameRef.current = requestAnimationFrame(updateCardTransforms);
   }, [updateCardTransforms]);
 
   const setupLenis = useCallback(() => {
     if (useWindowScroll) {
       const lenis = new Lenis({
-        duration: 1.2,
+        duration: 1.4, // Slightly longer for stability
         easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        touchMultiplier: 2,
-        infinite: false,
-        wheelMultiplier: 1,
-        lerp: 0.1,
+        lerp: 0.05, // Smoother lerp to prevent oscillations
         syncTouch: true,
-        syncTouchLerp: 0.075
       });
       lenis.on('scroll', handleScroll);
       const raf = time => {
         lenis.raf(time);
-        animationFrameRef.current = requestAnimationFrame(raf);
+        requestAnimationFrame(raf);
       };
-      animationFrameRef.current = requestAnimationFrame(raf);
+      requestAnimationFrame(raf);
       lenisRef.current = lenis;
     } else {
       const scroller = scrollerRef.current;
@@ -189,23 +188,16 @@ const ScrollStack = ({
       const lenis = new Lenis({
         wrapper: scroller,
         content: scroller.querySelector('.scroll-stack-inner'),
-        duration: 1.2,
-        easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        smoothWheel: true,
-        touchMultiplier: 2,
-        infinite: false,
-        normalizeWheel: true,
-        wheelMultiplier: 1,
-        lerp: 0.1,
+        duration: 1.4,
+        lerp: 0.05,
         syncTouch: true,
-        syncTouchLerp: 0.075
       });
       lenis.on('scroll', handleScroll);
       const raf = time => {
         lenis.raf(time);
-        animationFrameRef.current = requestAnimationFrame(raf);
+        requestAnimationFrame(raf);
       };
-      animationFrameRef.current = requestAnimationFrame(raf);
+      requestAnimationFrame(raf);
       lenisRef.current = lenis;
     }
   }, [handleScroll, useWindowScroll]);
@@ -228,8 +220,7 @@ const ScrollStack = ({
       card.style.willChange = 'transform, filter';
       card.style.transformOrigin = 'top center';
       card.style.backfaceVisibility = 'hidden';
-      card.style.transform = 'translateZ(0)';
-      card.style.perspective = '1000px';
+      card.style.transform = 'translate3d(0,0,0)';
     });
 
     setupLenis();
@@ -245,7 +236,7 @@ const ScrollStack = ({
     };
   }, [
     itemDistance, itemScale, itemStackDistance, stackPosition,
-    scaleEndPosition, baseScale, scaleDuration, rotationAmount,
+    scaleEndPosition, baseScale, rotationAmount,
     blurAmount, useWindowScroll, onStackComplete, setupLenis, updateCardTransforms
   ]);
 

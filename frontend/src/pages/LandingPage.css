@@ -1,12 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
 
 /* ── Root ─────────────────────────────────────── */
+:root {
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-title: 'Outfit', sans-serif;
+}
+
 .lp-root {
   position: relative;
   min-height: 100vh;
   background: #050508;
   color: #fff;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-main);
   overflow-x: hidden;
 }
 
@@ -236,10 +241,23 @@
 .lp-step {
   font-family: 'JetBrains Mono', monospace;
   font-size: 0.78rem;
-  color: rgba(255,255,255,0.35);
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: rgba(255,255,255,0.4);
 }
+
+.lp-step-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+}
+
 .lp-step.done { color: #27c93f; }
+.lp-step.done .lp-step-dot { background: #27c93f; box-shadow: 0 0 8px rgba(39, 201, 63, 0.4); }
+
 .lp-step.active { color: #ffbd2e; }
+.lp-step.active .lp-step-dot { background: #ffbd2e; box-shadow: 0 0 8px rgba(255, 189, 46, 0.4); animation: pulse 1.5s infinite; }
 
 .lp-card-code {
   background: rgba(0,0,0,0.3);
@@ -311,6 +329,7 @@
 }
 
 .lp-stack-card-title {
+  font-family: var(--font-title);
   font-size: clamp(1.8rem, 3vw, 2.8rem);
   font-weight: 900;
   margin-bottom: 1.2rem;
@@ -320,10 +339,48 @@
 }
 
 .lp-stack-card-desc {
-  font-size: 1.05rem;
-  color: rgba(255,255,255,0.55);
+  font-size: 1rem;
+  color: rgba(255,255,255,0.5);
   line-height: 1.8;
   max-width: 480px;
+  margin-bottom: 2.5rem;
+}
+
+.lp-stack-card-stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: auto;
+}
+
+.lp-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.lp-stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.3);
+}
+
+.lp-stat-value {
+  font-family: var(--font-title);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.lp-stack-card-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--card-color, #e100ff);
+  margin-bottom: 0.8rem;
+  opacity: 0.8;
 }
 
 /* ── Footer ───────────────────────────────────── */

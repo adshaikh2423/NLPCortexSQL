@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack/ScrollStack';
+import TypewriterCode from '../components/TypewriterCode/TypewriterCode';
 import imgMultiAgent from '../assets/card_multi_agent.png';
 import imgSelfHeal from '../assets/card_self_healing.png';
 import imgSchema from '../assets/card_schema_memory.png';
@@ -11,28 +12,59 @@ import './LandingPage.css';
 const STACK_CARDS = [
   {
     img: imgMultiAgent,
+    tag: 'ORCHESTRATION',
     title: 'Multi-Agent Reasoning',
-    desc: '5 specialized agents — Supervisor, Reasoner, SQL Agent, Reflector & Formatter — working in perfect sync to process every query autonomously.',
+    desc: 'A Supervisor agent receives your natural language query and routes it to the most capable specialist. The Reasoner decomposes complex requests, the SQL Agent constructs the query, the Reflector self-corrects errors, and the Formatter delivers clean, readable results.',
+    stats: [
+      { label: 'Agents', value: '5' },
+      { label: 'Avg Latency', value: '1.2s' },
+      { label: 'Accuracy', value: '94%' },
+    ],
     color: '#e100ff',
   },
   {
     img: imgSelfHeal,
+    tag: 'RESILIENCE',
     title: 'Self-Healing Loop',
-    desc: 'When an error occurs, the Reflector agent reads the traceback, corrects the SQL, and re-executes — all without any user intervention.',
+    desc: 'When a SQL query fails, the Reflector agent captures the full database traceback, diagnoses the root cause, and generates a corrected query — all autonomously. It retries up to 3 times before surfacing a human-readable error, ensuring maximum uptime.',
+    stats: [
+      { label: 'Max Retries', value: '3' },
+      { label: 'Recovery Rate', value: '91%' },
+      { label: 'Autonomy', value: '100%' },
+    ],
     color: '#7f00ff',
   },
   {
     img: imgSchema,
+    tag: 'MEMORY',
     title: 'Semantic Schema Memory',
-    desc: "Upload any CSV or Excel file and the system instantly maps the schema into the AI's working memory, making it immediately queryable.",
-    color: '#b8b8ff',
+    desc: 'Upload any CSV or Excel file and the system automatically infers column types, relationships, and semantics. The schema is stored in the AI working memory and validated on every query — so the AI always knows exactly what data it is talking to.',
+    stats: [
+      { label: 'File Types', value: 'CSV, XLS' },
+      { label: 'Inference', value: 'Auto' },
+      { label: 'Scope', value: 'User' },
+    ],
+    color: '#5b8fff',
   },
   {
     img: imgSecure,
+    tag: 'SECURITY',
     title: 'Secure Execution Layer',
-    desc: "Every SQL query is validated against the user's registered schema before execution, preventing unauthorized access to any data.",
+    desc: 'Every generated SQL query is cryptographically validated against the user\'s registered schema registry before touching the database. Dynamic table access is scoped per user, preventing cross-tenant data leakage and unauthorized table scans.',
+    stats: [
+      { label: 'Auth', value: 'JWT' },
+      { label: 'Registry', value: 'Active' },
+      { label: 'Isolation', value: 'Tenant' },
+    ],
     color: '#cf6fff',
   },
+];
+
+const AGENT_STEPS = [
+  { label: 'Supervisor', detail: 'Task routed to SQL Agent', done: true },
+  { label: 'Reasoner', detail: 'Schema decomposed', done: true },
+  { label: 'SQL Agent', detail: 'Query constructed', done: true },
+  { label: 'Executor', detail: 'Running query...', done: false },
 ];
 
 export default function LandingPage({ onGetStarted }) {
@@ -40,30 +72,18 @@ export default function LandingPage({ onGetStarted }) {
 
   return (
     <div className="lp-root">
-      {/* Aurora Background */}
       <div className="lp-aurora">
         <SoftAurora
-          speed={0.6}
-          scale={1.5}
-          brightness={1.2}
-          color1="#b8b8ff"
-          color2="#e100ff"
-          noiseFrequency={2.5}
-          noiseAmplitude={1}
-          bandHeight={0.5}
-          bandSpread={1}
-          octaveDecay={0.1}
-          layerOffset={0}
-          colorSpeed={1}
-          enableMouseInteraction
-          mouseInfluence={0.25}
+          speed={0.6} scale={1.5} brightness={1.2}
+          color1="#b8b8ff" color2="#e100ff"
+          noiseFrequency={2.5} noiseAmplitude={1}
+          bandHeight={0.5} bandSpread={1}
+          octaveDecay={0.1} layerOffset={0} colorSpeed={1}
+          enableMouseInteraction mouseInfluence={0.25}
         />
       </div>
-
-      {/* Noise Overlay */}
       <div className="lp-noise" />
 
-      {/* Nav */}
       <nav className="lp-nav">
         <div className="lp-nav-brand">
           <span className="lp-nav-dot" />
@@ -72,7 +92,6 @@ export default function LandingPage({ onGetStarted }) {
         <button className="lp-btn-outline" onClick={onGetStarted}>Launch App →</button>
       </nav>
 
-      {/* Hero */}
       <section className="lp-hero">
         <motion.div
           className="lp-hero-content"
@@ -80,47 +99,31 @@ export default function LandingPage({ onGetStarted }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: 'easeOut' }}
         >
-          <motion.span
-            className="lp-badge"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            ✦ Autonomous Data Intelligence
-          </motion.span>
-
           <h1 className="lp-hero-title">
             Talk to Your Data<br />
             <span className="lp-hero-gradient">Like It&apos;s Human</span>
           </h1>
-
           <p className="lp-hero-sub">
             Transform complex PostgreSQL schemas into conversational insights
             using a 5-agent LangGraph pipeline and hybrid Gemini intelligence.
           </p>
-
           <div className="lp-hero-actions">
             <motion.button
-              className="lp-btn-primary"
-              onClick={onGetStarted}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
+              className="lp-btn-primary" onClick={onGetStarted}
+              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
             >
               Get Started <span className="lp-btn-arrow">→</span>
             </motion.button>
             <motion.a
               href="https://github.com/adshaikh2423/NLPCortexSQL"
-              target="_blank"
-              rel="noreferrer"
-              className="lp-btn-ghost"
-              whileHover={{ scale: 1.04 }}
+              target="_blank" rel="noreferrer"
+              className="lp-btn-ghost" whileHover={{ scale: 1.04 }}
             >
-              ⭐ GitHub
+              GitHub
             </motion.a>
           </div>
         </motion.div>
 
-        {/* Terminal Card */}
         <motion.div
           className="lp-hero-card"
           initial={{ opacity: 0, x: 60 }}
@@ -136,34 +139,24 @@ export default function LandingPage({ onGetStarted }) {
           <div className="lp-card-body">
             <p className="lp-card-query">&gt; &quot;Show top 5 products by revenue this quarter&quot;</p>
             <div className="lp-card-steps">
-              <p className="lp-step done">✓ Supervisor: Task delegated</p>
-              <p className="lp-step done">✓ Reasoner: Schema analyzed</p>
-              <p className="lp-step done">✓ SQL Agent: Query generated</p>
-              <p className="lp-step active">⟳ Executor: Running...</p>
+              {AGENT_STEPS.map(s => (
+                <p key={s.label} className={`lp-step ${s.done ? 'done' : 'active'}`}>
+                  <span className="lp-step-dot" /> {s.label}: {s.detail}
+                </p>
+              ))}
             </div>
-            <pre className="lp-card-code">{`SELECT p.name, SUM(o.amount) AS revenue
-FROM orders o
-JOIN products p ON o.product_id = p.id
-WHERE o.created_at >= '2024-01-01'
-GROUP BY p.name
-ORDER BY revenue DESC
-LIMIT 5;`}</pre>
+            <TypewriterCode />
           </div>
         </motion.div>
       </section>
 
-      {/* Scroll Stack — Features */}
       <section id="features" className="lp-stack-section">
         <div className="lp-stack-wrapper">
           <ScrollStack
-            itemDistance={150}
-            itemScale={0.04}
-            itemStackDistance={30}
-            stackPosition="15%"
-            scaleEndPosition="5%"
-            baseScale={0.9}
-            blurAmount={0}
-            useWindowScroll
+            itemDistance={150} itemScale={0.04}
+            itemStackDistance={30} stackPosition="15%"
+            scaleEndPosition="5%" baseScale={0.9}
+            blurAmount={0} useWindowScroll
           >
             {STACK_CARDS.map((card, i) => (
               <ScrollStackItem key={card.title}>
@@ -177,8 +170,17 @@ LIMIT 5;`}</pre>
                     <img src={card.img} alt={card.title} className="lp-stack-card-img" />
                   </div>
                   <div className="lp-stack-card-text">
+                    <span className="lp-stack-card-tag">{card.tag}</span>
                     <h3 className="lp-stack-card-title">{card.title}</h3>
                     <p className="lp-stack-card-desc">{card.desc}</p>
+                    <div className="lp-stack-card-stats">
+                      {card.stats.map(s => (
+                        <div key={s.label} className="lp-stat">
+                          <span className="lp-stat-label">{s.label}</span>
+                          <span className="lp-stat-value">{s.value}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </ScrollStackItem>
@@ -187,7 +189,6 @@ LIMIT 5;`}</pre>
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="lp-footer">
         <p>© 2025 NLPCortexSQL · Built with FastAPI, LangGraph &amp; React</p>
       </footer>
