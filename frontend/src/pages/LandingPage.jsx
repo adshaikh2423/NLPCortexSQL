@@ -20,19 +20,19 @@ const STACK_CARDS = [
   {
     emoji: '🧠',
     title: 'Semantic Schema Memory',
-    desc: 'Upload any CSV or Excel file and the system instantly maps the schema into the AI\'s working memory, making it immediately queryable.',
+    desc: "Upload any CSV or Excel file and the system instantly maps the schema into the AI's working memory, making it immediately queryable.",
     color: '#b8b8ff',
   },
   {
     emoji: '🔒',
     title: 'Secure Execution Layer',
-    desc: 'Every SQL query is validated against the user\'s registered schema before execution, preventing unauthorized access to any data.',
+    desc: "Every SQL query is validated against the user's registered schema before execution, preventing unauthorized access to any data.",
     color: '#cf6fff',
   },
 ];
 
 export default function LandingPage({ onGetStarted }) {
-  const [hovered, setHovered] = useState(null);
+  const [, setHovered] = useState(null);
 
   return (
     <div className="lp-root">
@@ -107,8 +107,7 @@ export default function LandingPage({ onGetStarted }) {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >
-              Get Started
-              <span className="lp-btn-arrow">→</span>
+              Get Started <span className="lp-btn-arrow">→</span>
             </motion.button>
             <motion.a
               href="https://github.com/adshaikh2423/NLPCortexSQL"
@@ -154,7 +153,7 @@ LIMIT 5;`}</pre>
         </motion.div>
       </section>
 
-      {/* Scroll Stack Features Section */}
+      {/* Scroll Stack — Features */}
       <section id="features" className="lp-stack-section">
         <div className="lp-stack-wrapper">
           <ScrollStack
@@ -166,6 +165,7 @@ LIMIT 5;`}</pre>
             baseScale={0.9}
             blurAmount={0}
             useWindowScroll
+          >
             {STACK_CARDS.map((card, i) => (
               <ScrollStackItem key={card.title}>
                 <div
@@ -179,7 +179,7 @@ LIMIT 5;`}</pre>
                     <h3 className="lp-stack-card-title">{card.title}</h3>
                     <p className="lp-stack-card-desc">{card.desc}</p>
                   </div>
-                  <div className="lp-stack-card-index">0{i + 1}</div>
+                  <div className="lp-stack-card-num">0{i + 1}</div>
                 </div>
               </ScrollStackItem>
             ))}
