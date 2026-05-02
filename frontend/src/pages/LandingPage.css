@@ -383,15 +383,49 @@
   opacity: 0.8;
 }
 
+/* ── CTA Section ──────────────────────────────── */
+.lp-cta-section {
+  padding: 12rem 6%;
+  text-align: center;
+  position: relative;
+  z-index: 5;
+}
+
+.lp-cta-title {
+  font-family: var(--font-title);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  margin-bottom: 1.5rem;
+}
+
+.lp-cta-sub {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.5);
+  max-width: 600px;
+  margin: 0 auto 3rem auto;
+}
+
+.lp-cta-btn {
+  padding: 1.2rem 3rem;
+  font-size: 1.1rem;
+  box-shadow: 0 10px 40px rgba(225, 0, 255, 0.3);
+}
+
 /* ── Footer ───────────────────────────────────── */
 .lp-footer {
-  position: relative;
-  z-index: 10;
+  padding: 4rem 6%;
   text-align: center;
-  padding: 4rem 2rem;
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.2);
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  z-index: 5;
+}
+
+.lp-footer p {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.5px;
 }
 
 /* ── Responsive ───────────────────────────────── */

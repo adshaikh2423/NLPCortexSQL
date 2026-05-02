@@ -189,8 +189,30 @@ export default function LandingPage({ onGetStarted }) {
         </div>
       </section>
 
+      {/* Final CTA Section */}
+      <section className="lp-cta-section">
+        <motion.div 
+          className="lp-cta-content"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          <h2 className="lp-cta-title">Ready to unlock your <br/><span className="lp-hero-gradient">data&apos;s voice?</span></h2>
+          <p className="lp-cta-sub">Join the next generation of autonomous data intelligence. Deploy your first agentic pipeline in minutes.</p>
+          <motion.button 
+            className="lp-btn-primary lp-cta-btn"
+            onClick={onGetStarted}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Launch NLPCortexSQL <span className="lp-btn-arrow">→</span>
+          </motion.button>
+        </motion.div>
+      </section>
+
       <footer className="lp-footer">
-        <p>© 2025 NLPCortexSQL · Built with FastAPI, LangGraph &amp; React</p>
+        <p>© 2026 NLPCortexSQL · Built with FastAPI, LangGraph &amp; React</p>
       </footer>
     </div>
   );
