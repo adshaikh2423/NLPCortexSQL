@@ -6,6 +6,7 @@
 # CREDENTIALS & SECRETS  (never push these)
 # -------------------------------------------------------------
 .env
+*.env
 .env.*
 .env.local
 .env.development
