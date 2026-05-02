@@ -156,26 +156,16 @@ LIMIT 5;`}</pre>
 
       {/* Scroll Stack Features Section */}
       <section id="features" className="lp-stack-section">
-        <motion.div
-          className="lp-stack-header"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="lp-section-title">Built Different</h2>
-          <p className="lp-section-sub">Scroll through the intelligence layers that power NLPCortexSQL</p>
-        </motion.div>
-
         <div className="lp-stack-wrapper">
           <ScrollStack
-            itemDistance={120}
-            itemScale={0.06}
-            itemStackDistance={40}
-            stackPosition="25%"
-            scaleEndPosition="10%"
-            baseScale={0.88}
-            blurAmount={1}
-          >
+            itemDistance={150}
+            itemScale={0.04}
+            itemStackDistance={30}
+            stackPosition="15%"
+            scaleEndPosition="5%"
+            baseScale={0.9}
+            blurAmount={0}
+            useWindowScroll
             {STACK_CARDS.map((card, i) => (
               <ScrollStackItem key={card.title}>
                 <div
