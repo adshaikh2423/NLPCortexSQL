@@ -148,9 +148,18 @@
 /* Chat View */
 .db-stage {
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto;
   position: relative;
-  padding: 30px;
+  padding: 30px 30px 100px 30px;
+}
+
+.db-stage::-webkit-scrollbar {
+  width: 6px;
+}
+
+.db-stage::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
 }
 
 .db-chat-view {
