@@ -9,9 +9,78 @@ import './AuthPage.css';
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  
   const navigate = useNavigate();
 
-  const toggleMode = () => setIsLogin(!isLogin);
+  const toggleMode = () => {
+    setIsLogin(!isLogin);
+    setError(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    // Basic Validation
+    if (!isLogin && formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const endpoint = isLogin ? '/login' : '/signup';
+      const payload = isLogin 
+        ? new URLSearchParams({ username: formData.email, password: formData.password }) 
+        : new URLSearchParams({ 
+            username: formData.name, 
+            email: formData.email, 
+            password: formData.password 
+          });
+
+      // Using Fetch for reliability
+      const response = await fetch(`http://localhost:8000${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: payload
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || "Authentication failed");
+      }
+
+      // Success! Store token and go to dashboard
+      if (data.access_token) {
+        localStorage.setItem('token', data.access_token);
+        navigate('/dashboard');
+      } else if (!isLogin) {
+        // For signup success (if no token returned immediately)
+        alert("Account created successfully! Please log in.");
+        setIsLogin(true);
+      }
+
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="auth-container">
@@ -62,7 +131,9 @@ const AuthPage = () => {
             </p>
           </div>
 
-          <form className="auth-form" onSubmit={(e) => e.preventDefault()}>
+          <form className="auth-form" onSubmit={handleSubmit}>
+            {error && <div className="auth-error-msg">{error}</div>}
+            
             <AnimatePresence mode="wait">
               {!isLogin && (
                 <motion.div 
@@ -73,19 +144,40 @@ const AuthPage = () => {
                   className="auth-input-group"
                 >
                   <label>Full Name</label>
-                  <input type="text" placeholder="Your full name" required />
+                  <input 
+                    name="name"
+                    type="text" 
+                    placeholder="Your full name" 
+                    required 
+                    value={formData.name}
+                    onChange={handleInputChange}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
 
             <div className="auth-input-group">
               <label>Email Address</label>
-              <input type="email" placeholder="name@company.com" required />
+              <input 
+                name="email"
+                type="email" 
+                placeholder="name@company.com" 
+                required 
+                value={formData.email}
+                onChange={handleInputChange}
+              />
             </div>
 
             <div className="auth-input-group">
               <label>Password</label>
-              <input type="password" placeholder="••••••••" required />
+              <input 
+                name="password"
+                type="password" 
+                placeholder="••••••••" 
+                required 
+                value={formData.password}
+                onChange={handleInputChange}
+              />
             </div>
 
             <AnimatePresence mode="wait">
@@ -98,7 +190,14 @@ const AuthPage = () => {
                   className="auth-input-group"
                 >
                   <label>Confirm Password</label>
-                  <input type="password" placeholder="••••••••" required />
+                  <input 
+                    name="confirmPassword"
+                    type="password" 
+                    placeholder="••••••••" 
+                    required 
+                    value={formData.confirmPassword}
+                    onChange={handleInputChange}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -106,10 +205,11 @@ const AuthPage = () => {
             <div className="auth-actions">
               <NoiseBackground
                 containerStyle={{ borderRadius: '0.75rem', padding: '2px', width: '100%' }}
-                gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
+                gradientColors={loading ? ["#555", "#333"] : ["#e100ff", "#00ff88", "#cf6fff"]}
               >
                 <button 
                   type="submit"
+                  disabled={loading}
                   style={{
                     width: '100%',
                     padding: '0.9rem',
@@ -119,11 +219,11 @@ const AuthPage = () => {
                     fontWeight: 700,
                     fontSize: '1rem',
                     border: 'none',
-                    cursor: 'pointer',
+                    cursor: loading ? 'not-allowed' : 'pointer',
                     fontFamily: 'inherit'
                   }}
                 >
-                  {isLogin ? "Sign In" : "Get Started"}
+                  {loading ? "Processing..." : (isLogin ? "Sign In" : "Get Started")}
                 </button>
               </NoiseBackground>
             </div>
