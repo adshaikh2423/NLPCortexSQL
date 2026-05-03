@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
 import { NoiseBackground } from '../components/ui/noise-background';
 import ShinyText from '../components/ShinyText/ShinyText';
@@ -23,6 +24,11 @@ const AuthPage = () => {
           octaveDecay={0.1} layerOffset={0} colorSpeed={1}
         />
       </div>
+
+      <button className="auth-back-btn" onClick={() => navigate('/')}>
+        <ArrowLeft size={18} />
+        <span>Back to Home</span>
+      </button>
 
       <motion.div 
         className="auth-card-wrapper"
