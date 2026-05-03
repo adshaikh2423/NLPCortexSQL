@@ -25,10 +25,17 @@ const AuthPage = () => {
         />
       </div>
 
-      <button className="auth-back-btn" onClick={() => navigate('/')}>
-        <ArrowLeft size={18} />
-        <span>Back to Home</span>
-      </button>
+      <div className="auth-back-wrapper">
+        <NoiseBackground
+          containerStyle={{ borderRadius: '99px', padding: '1.5px' }}
+          gradientColors={["#ffffff", "#b8b8ff"]}
+        >
+          <button className="auth-back-btn" onClick={() => navigate('/')}>
+            <ArrowLeft size={16} />
+            <span>Back to Home</span>
+          </button>
+        </NoiseBackground>
+      </div>
 
       <motion.div 
         className="auth-card-wrapper"
@@ -47,7 +54,7 @@ const AuthPage = () => {
                 text={isLogin ? "Welcome Back" : "Create Account"} 
                 speed={3} 
                 color="#ffffff" 
-                shineColor="#b5b5b5" 
+                shineColor="#ffffff" 
               />
             </h2>
             <p className="auth-subtitle">
