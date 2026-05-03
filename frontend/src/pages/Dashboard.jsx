@@ -293,22 +293,45 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {files.length > 0 && (
+                {files.length > 0 ? (
                   <div className="db-files-list">
                     <h4>Active Knowledge Base</h4>
-                    {files.map((f, i) => (
-                      <div key={i} className="db-file-item">
-                        <FileSpreadsheet size={18} />
-                        <div className="file-info">
-                          <span className="file-name">{f.name}</span>
-                          <span className="file-table-id">Table ID: <code>{f.table}</code></span>
+                    <div className="db-files-grid">
+                      {files.map((f, i) => (
+                        <div key={i} className="db-file-card">
+                          <div className="file-card-header">
+                            <div className="file-card-icon"><FileSpreadsheet size={24} color="#e100ff" /></div>
+                            <div className="file-card-meta">
+                              <span className="file-card-name">{f.name || "Untitled Dataset"}</span>
+                              <span className="file-card-id">Table: <code>{f.table}</code></span>
+                            </div>
+                            <button className="file-card-delete" title="Delete Source" onClick={() => handleDeleteFile(f.table)}>
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                          
+                          <div className="file-card-body">
+                            <div className="file-stat">
+                              <span className="stat-label">Records</span>
+                              <span className="stat-value">{f.rows || 0}</span>
+                            </div>
+                            <div className="file-schema-preview">
+                              <span className="schema-label">Schema (Columns)</span>
+                              <div className="schema-tags">
+                                {f.columns && Object.keys(JSON.parse(f.columns)).map(col => (
+                                  <span key={col} className="schema-tag">{col}</span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="file-actions">
-                          <button title="View Schema" onClick={() => setSelectedSchema(f)}><Info size={18}/></button>
-                          <button className="delete" title="Delete Source" onClick={() => handleDeleteFile(f.table)}><Trash2 size={18}/></button>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="db-empty-state">
+                    <Database size={48} color="rgba(255,255,255,0.1)" />
+                    <p>No active sources found. Upload a CSV to begin analysis.</p>
                   </div>
                 )}
               </motion.div>
