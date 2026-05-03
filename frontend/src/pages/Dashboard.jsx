@@ -34,7 +34,10 @@ const Dashboard = () => {
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    fetchFiles(); 
+    fetchFiles(); // Pre-fetch for suggestions
+  }, []);
+
+  useEffect(() => {
     if (activeTab === 'history') fetchHistory();
   }, [activeTab]);
 
