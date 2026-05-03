@@ -47,7 +47,7 @@ const AuthPage = () => {
       const payload = isLogin 
         ? new URLSearchParams({ username: formData.email, password: formData.password }) 
         : new URLSearchParams({ 
-            username: formData.name, 
+            username: formData.email, // Using email as the unique identifier
             email: formData.email, 
             password: formData.password 
           });
