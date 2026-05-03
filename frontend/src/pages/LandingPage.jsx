@@ -159,7 +159,7 @@ export default function LandingPage({ onGetStarted }) {
             </NoiseBackground>
             <NoiseBackground
               containerStyle={{ borderRadius: '0.75rem', padding: '2px', display: 'inline-block' }}
-              gradientColors={["#6366f1", "#a78bfa", "#818cf8"]}
+              gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
             >
               <a
                 href="https://github.com/adshaikh2423/NLPCortexSQL"
