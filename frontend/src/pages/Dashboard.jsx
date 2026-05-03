@@ -29,13 +29,37 @@ const Dashboard = () => {
   const [files, setFiles] = useState([]);
   const [history, setHistory] = useState([]);
   const [selectedSchema, setSelectedSchema] = useState(null);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    if (activeTab === 'data') fetchFiles();
+    fetchFiles(); 
     if (activeTab === 'history') fetchHistory();
   }, [activeTab]);
+
+  const handleInputChange = (val) => {
+    setInput(val);
+    const words = val.split(' ');
+    const lastWord = words[words.length - 1].toLowerCase();
+    
+    if (lastWord.length >= 2) {
+      const matches = files.filter(f => 
+        (f.name && f.name.toLowerCase().includes(lastWord)) || 
+        (f.table && f.table.toLowerCase().includes(lastWord))
+      ).map(f => f.name || f.table);
+      setFilteredSuggestions([...new Set(matches)]);
+    } else {
+      setFilteredSuggestions([]);
+    }
+  };
+
+  const applySuggestion = (suggestion) => {
+    const words = input.split(' ');
+    words[words.length - 1] = suggestion;
+    setInput(words.join(' ') + ' ');
+    setFilteredSuggestions([]);
+  };
 
   const fetchFiles = async () => {
     try {
@@ -207,12 +231,6 @@ const Dashboard = () => {
                         ) : (
                           <ReactMarkdown>{msg.content}</ReactMarkdown>
                         )}
-                        {msg.ml_draft && (
-                          <div className="db-msg-ml-draft">
-                            <div className="ml-draft-header">🤖 Local ML Draft Logic</div>
-                            <code>{msg.ml_draft}</code>
-                          </div>
-                        )}
                         {msg.sql && (
                           <div className="db-msg-sql">
                             <div className="sql-header">Final Verified SQL</div>
@@ -243,7 +261,23 @@ const Dashboard = () => {
                 </div>
                 <div className="db-input-area">
                   <div className="db-input-wrapper">
-                    <input type="text" placeholder="Explore your data sources..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} />
+                    {filteredSuggestions.length > 0 && (
+                      <div className="db-suggestions-box">
+                        {filteredSuggestions.map((s, idx) => (
+                          <div key={idx} className="db-suggestion-item" onClick={() => applySuggestion(s)}>
+                            <Database size={14} />
+                            <span>{s}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <input 
+                      type="text" 
+                      placeholder="Explore your data sources..." 
+                      value={input} 
+                      onChange={(e) => handleInputChange(e.target.value)} 
+                      onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} 
+                    />
                     <button className="db-send-btn" onClick={handleSendMessage} disabled={loading}><Send size={20} /></button>
                   </div>
                 </div>
