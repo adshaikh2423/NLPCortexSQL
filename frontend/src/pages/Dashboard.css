@@ -216,6 +216,13 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #eee;
   border-bottom-left-radius: 4px;
+  position: relative;
+}
+
+.assistant .db-message-bubble:has(.shiny-text) {
+  background: rgba(225, 0, 255, 0.05);
+  border-color: rgba(225, 0, 255, 0.2);
+  box-shadow: 0 0 30px rgba(225, 0, 255, 0.1);
 }
 
 .db-message-bubble.error {

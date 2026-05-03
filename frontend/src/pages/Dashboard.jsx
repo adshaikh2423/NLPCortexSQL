@@ -23,7 +23,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('chat');
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'System online. Agents standing by. How can I help you explore your data today?', agents: [] }
+    { role: 'assistant', content: 'System online. Agents standing by. How can I help you explore your data today?', agents: [], isWelcome: true }
   ]);
   const [input, setInput] = useState('');
   const [files, setFiles] = useState([]);
@@ -196,7 +196,16 @@ const Dashboard = () => {
                   {messages.map((msg, i) => (
                     <div key={i} className={`db-message ${msg.role}`}>
                       <div className={`db-message-bubble ${msg.isError ? 'error' : ''}`}>
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        {msg.isWelcome ? (
+                          <ShinyText 
+                            text={msg.content} 
+                            speed={4} 
+                            color="#fff" 
+                            shineColor="#cf6fff" 
+                          />
+                        ) : (
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        )}
                         {msg.sql && <div className="db-msg-sql"><div className="sql-header">Generated SQL</div><code>{msg.sql}</code></div>}
                         {msg.results && msg.results.length > 0 && (
                           <div className="db-msg-results">
