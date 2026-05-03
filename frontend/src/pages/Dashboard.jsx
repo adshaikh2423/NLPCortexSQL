@@ -6,19 +6,16 @@ import {
   MessageSquare, 
   Database, 
   History, 
-  Settings, 
   LogOut, 
   Upload, 
   Cpu, 
   Send,
   FileSpreadsheet,
-  Terminal,
   Trash2,
-  Info,
-  X
+  X,
+  Clock
 } from 'lucide-react';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
-import { NoiseBackground } from '../components/ui/noise-background';
 import ShinyText from '../components/ShinyText/ShinyText';
 import './Dashboard.css';
 
@@ -30,14 +27,15 @@ const Dashboard = () => {
   ]);
   const [input, setInput] = useState('');
   const [files, setFiles] = useState([]);
+  const [history, setHistory] = useState([]);
   const [selectedSchema, setSelectedSchema] = useState(null);
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
 
-  // Fetch files on load
   useEffect(() => {
-    fetchFiles();
-  }, []);
+    if (activeTab === 'data') fetchFiles();
+    if (activeTab === 'history') fetchHistory();
+  }, [activeTab]);
 
   const fetchFiles = async () => {
     try {
@@ -51,7 +49,21 @@ const Dashboard = () => {
     }
   };
 
-  // Auto-scroll chat
+  const fetchHistory = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:8000/history', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      const data = await response.json();
+      if (response.ok) setHistory(data);
+    } catch (err) {
+      console.error("Failed to fetch history", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -64,25 +76,21 @@ const Dashboard = () => {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
     const tableName = file.name.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
     formData.append('table_name', tableName);
-
     try {
       const response = await fetch('http://localhost:8000/upload', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: formData
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || "Upload failed");
-
       fetchFiles();
-      alert(`Success: ${file.name} ingested as '${tableName}'`);
+      alert(`Success: ${file.name} ingested.`);
     } catch (err) {
       alert(`Error: ${err.message}`);
     } finally {
@@ -91,15 +99,13 @@ const Dashboard = () => {
   };
 
   const handleDeleteFile = async (tableName) => {
-    if (!window.confirm(`Are you sure you want to delete table '${tableName}'?`)) return;
-    
+    if (!window.confirm(`Delete table '${tableName}'?`)) return;
     try {
       const response = await fetch(`http://localhost:8000/delete-table/${tableName}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
       if (response.ok) fetchFiles();
-      else alert("Delete failed");
     } catch (err) {
       alert("Error deleting file");
     }
@@ -107,34 +113,28 @@ const Dashboard = () => {
 
   const handleSendMessage = async () => {
     if (!input.trim() || loading) return;
-    
     const userMsg = { role: 'user', content: input };
     setMessages(prev => [...prev, userMsg]);
     const currentInput = input;
     setInput('');
     setLoading(true);
-
     try {
       const formData = new FormData();
       formData.append('query', currentInput);
-
       const response = await fetch('http://localhost:8000/chat', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: formData
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || "Query failed");
-
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: data.answer,
         sql: data.sql,
-        results: data.data[0], // Take first dataset if multiple
+        results: data.data[0],
         agents: ['Supervisor', 'Reasoner', 'SQL Agent', 'Executor']
       }]);
-
     } catch (err) {
       setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}`, isError: true }]);
     } finally {
@@ -144,23 +144,10 @@ const Dashboard = () => {
 
   return (
     <div className="db-container">
-      {/* Schema Modal */}
       <AnimatePresence>
         {selectedSchema && (
-          <motion.div 
-            className="db-modal-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedSchema(null)}
-          >
-            <motion.div 
-              className="db-modal"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={e => e.stopPropagation()}
-            >
+          <motion.div className="db-modal-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelectedSchema(null)}>
+            <motion.div className="db-modal" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} onClick={e => e.stopPropagation()}>
               <div className="modal-header">
                 <h3>Table Schema: {selectedSchema.table}</h3>
                 <button onClick={() => setSelectedSchema(null)}><X size={20}/></button>
@@ -174,39 +161,18 @@ const Dashboard = () => {
       </AnimatePresence>
 
       <div className="db-bg">
-        <SoftAurora 
-          color1="#1a1a2e" color2="#0a0a0c"
-          noiseFrequency={1.5} noiseAmplitude={0.5}
-          bandHeight={0.3} bandSpread={0.8}
-        />
+        <SoftAurora color1="#1a1a2e" color2="#0a0a0c" noiseFrequency={1.5} noiseAmplitude={0.5} bandHeight={0.3} bandSpread={0.8} />
       </div>
 
       <aside className="db-sidebar">
-        <div className="db-logo">
-          <div className="db-logo-dot" />
-          <span>CortexSQL</span>
-        </div>
-
+        <div className="db-logo"><div className="db-logo-dot" /><span>CortexSQL</span></div>
         <nav className="db-nav">
-          <button className={`db-nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => setActiveTab('chat')}>
-            <MessageSquare size={20} />
-            <span>Agentic Chat</span>
-          </button>
-          <button className={`db-nav-item ${activeTab === 'data' ? 'active' : ''}`} onClick={() => setActiveTab('data')}>
-            <Database size={20} />
-            <span>Data Sources</span>
-          </button>
-          <button className={`db-nav-item ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>
-            <History size={20} />
-            <span>Analysis Log</span>
-          </button>
+          <button className={`db-nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => setActiveTab('chat')}><MessageSquare size={20} /><span>Agentic Chat</span></button>
+          <button className={`db-nav-item ${activeTab === 'data' ? 'active' : ''}`} onClick={() => setActiveTab('data')}><Database size={20} /><span>Data Sources</span></button>
+          <button className={`db-nav-item ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}><History size={20} /><span>Analysis Log</span></button>
         </nav>
-
         <div className="db-sidebar-footer">
-          <button className="db-nav-item logout" onClick={handleLogout}>
-            <LogOut size={20} />
-            <span>Exit Platform</span>
-          </button>
+          <button className="db-nav-item logout" onClick={handleLogout}><LogOut size={20} /><span>Exit Platform</span></button>
         </div>
       </aside>
 
@@ -214,85 +180,59 @@ const Dashboard = () => {
         <header className="db-header">
           <div className="db-header-left">
             <h1 className="db-title">
-              <ShinyText text={activeTab === 'chat' ? "Intelligence Engine" : "Source Hub"} speed={4} color="#fff" shineColor="#cf6fff" />
+              <ShinyText text={activeTab === 'chat' ? "Intelligence Engine" : activeTab === 'data' ? "Source Hub" : "Analysis History"} speed={4} color="#fff" shineColor="#cf6fff" />
             </h1>
           </div>
           <div className="db-header-right">
-            <div className="db-agent-status">
-              <span className="status-pulse" />
-              Status: <span className="status-text">{loading ? "Processing..." : "Ready"}</span>
-            </div>
+            <div className="db-agent-status"><span className="status-pulse" />Status: <span className="status-text">{loading ? "Processing..." : "Ready"}</span></div>
           </div>
         </header>
 
         <section className="db-stage">
           <AnimatePresence mode="wait">
-            {activeTab === 'chat' ? (
+            {activeTab === 'chat' && (
               <motion.div key="chat" className="db-chat-view" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                 <div className="db-messages-container">
                   {messages.map((msg, i) => (
                     <div key={i} className={`db-message ${msg.role}`}>
                       <div className={`db-message-bubble ${msg.isError ? 'error' : ''}`}>
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
-                        
-                        {msg.sql && (
-                          <div className="db-msg-sql">
-                            <div className="sql-header">Generated SQL</div>
-                            <code>{msg.sql}</code>
-                          </div>
-                        )}
-
+                        {msg.sql && <div className="db-msg-sql"><div className="sql-header">Generated SQL</div><code>{msg.sql}</code></div>}
                         {msg.results && msg.results.length > 0 && (
                           <div className="db-msg-results">
                             <div className="results-header">Preview ({msg.results.length} rows)</div>
                             <div className="results-table-wrapper">
                               <table>
-                                <thead>
-                                  <tr>{Object.keys(msg.results[0]).map(k => <th key={k}>{k}</th>)}</tr>
-                                </thead>
-                                <tbody>
-                                  {msg.results.slice(0, 5).map((row, ri) => (
-                                    <tr key={ri}>{Object.values(row).map((val, vi) => <td key={vi}>{String(val)}</td>)}</tr>
-                                  ))}
-                                </tbody>
+                                <thead><tr>{Object.keys(msg.results[0]).map(k => <th key={k}>{k}</th>)}</tr></thead>
+                                <tbody>{msg.results.slice(0, 5).map((row, ri) => <tr key={ri}>{Object.values(row).map((val, vi) => <td key={vi}>{String(val)}</td>)}</tr>)}</tbody>
                               </table>
                             </div>
                           </div>
                         )}
-
-                        {msg.agents && msg.agents.length > 0 && (
-                          <div className="db-message-agents">
-                            {msg.agents.map(a => <span key={a} className="agent-badge"><Cpu size={12}/> {a}</span>)}
-                          </div>
-                        )}
+                        {msg.agents && msg.agents.length > 0 && <div className="db-message-agents">{msg.agents.map(a => <span key={a} className="agent-badge"><Cpu size={12}/> {a}</span>)}</div>}
                       </div>
                     </div>
                   ))}
                   <div ref={chatEndRef} />
                 </div>
-
                 <div className="db-input-area">
                   <div className="db-input-wrapper">
                     <input type="text" placeholder="Explore your data sources..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} />
-                    <button className="db-send-btn" onClick={handleSendMessage} disabled={loading}>
-                      <Send size={20} />
-                    </button>
+                    <button className="db-send-btn" onClick={handleSendMessage} disabled={loading}><Send size={20} /></button>
                   </div>
                 </div>
               </motion.div>
-            ) : (
+            )}
+
+            {activeTab === 'data' && (
               <motion.div key="data" className="db-data-view" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
                 <div className="db-upload-grid">
                   <div className="db-upload-card">
                     <div className="upload-icon-box"><FileSpreadsheet size={40} color="#e100ff" /></div>
                     <h3>Upload Data Source</h3>
-                    <label className="db-upload-label">
-                      <Upload size={18} /> Select CSV
-                      <input type="file" accept=".csv" onChange={handleFileUpload} hidden disabled={loading} />
-                    </label>
+                    <label className="db-upload-label"><Upload size={18} /> Select CSV<input type="file" accept=".csv" onChange={handleFileUpload} hidden disabled={loading} /></label>
                   </div>
                 </div>
-
                 {files.length > 0 ? (
                   <div className="db-files-list">
                     <h4>Active Knowledge Base</h4>
@@ -301,38 +241,39 @@ const Dashboard = () => {
                         <div key={i} className="db-file-card">
                           <div className="file-card-header">
                             <div className="file-card-icon"><FileSpreadsheet size={24} color="#e100ff" /></div>
-                            <div className="file-card-meta">
-                              <span className="file-card-name">{f.name || "Untitled Dataset"}</span>
-                              <span className="file-card-id">Table: <code>{f.table}</code></span>
-                            </div>
-                            <button className="file-card-delete" title="Delete Source" onClick={() => handleDeleteFile(f.table)}>
-                              <Trash2 size={18} />
-                            </button>
+                            <div className="file-card-meta"><span className="file-card-name">{f.name || "Untitled"}</span><span className="file-card-id">Table: <code>{f.table}</code></span></div>
+                            <button className="file-card-delete" onClick={() => handleDeleteFile(f.table)}><Trash2 size={18} /></button>
                           </div>
-                          
                           <div className="file-card-body">
-                            <div className="file-stat">
-                              <span className="stat-label">Records</span>
-                              <span className="stat-value">{f.rows || 0}</span>
-                            </div>
-                            <div className="file-schema-preview">
-                              <span className="schema-label">Schema (Columns)</span>
-                              <div className="schema-tags">
-                                {f.columns && Object.keys(JSON.parse(f.columns)).map(col => (
-                                  <span key={col} className="schema-tag">{col}</span>
-                                ))}
-                              </div>
-                            </div>
+                            <div className="file-stat"><span className="stat-label">Records</span><span className="stat-value">{f.rows || 0}</span></div>
+                            <div className="file-schema-preview"><span className="schema-label">Schema</span><div className="schema-tags">{f.columns && Object.keys(JSON.parse(f.columns)).map(col => <span key={col} className="schema-tag">{col}</span>)}</div></div>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
                 ) : (
-                  <div className="db-empty-state">
-                    <Database size={48} color="rgba(255,255,255,0.1)" />
-                    <p>No active sources found. Upload a CSV to begin analysis.</p>
+                  <div className="db-empty-state"><Database size={48} color="rgba(255,255,255,0.1)" /><p>No active sources found. Upload a CSV to begin.</p></div>
+                )}
+              </motion.div>
+            )}
+
+            {activeTab === 'history' && (
+              <motion.div key="history" className="db-history-view" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                <div className="history-header"><h2>Analysis Log</h2><p>Timeline of past insights and reflections</p></div>
+                {history.length > 0 ? (
+                  <div className="history-timeline">
+                    {history.map((log, idx) => (
+                      <div key={idx} className="history-card">
+                        <div className="history-card-top"><span className="history-time">{new Date(log.timestamp).toLocaleString()}</span><div className="history-badge">SQL Verified</div></div>
+                        <div className="history-query">"{log.query}"</div>
+                        <div className="history-answer"><ReactMarkdown>{log.answer}</ReactMarkdown></div>
+                        <details className="history-sql-trace"><summary>View SQL Execution Trace</summary><code>{log.sql}</code></details>
+                      </div>
+                    ))}
                   </div>
+                ) : (
+                  <div className="db-empty-state"><Clock size={64} className="empty-icon" /><p>Your history is empty.</p><button className="db-secondary-btn" onClick={() => setActiveTab('chat')}>Start Exploration</button></div>
                 )}
               </motion.div>
             )}
@@ -344,4 +285,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
