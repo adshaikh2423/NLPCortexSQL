@@ -132,8 +132,9 @@ const Dashboard = () => {
         role: 'assistant',
         content: data.answer,
         sql: data.sql,
+        ml_draft: data.ml_draft,
         results: data.data[0],
-        agents: ['Supervisor', 'Reasoner', 'SQL Agent', 'Executor']
+        agents: ['Supervisor', 'Reasoner', 'Reflector', 'Executor']
       }]);
     } catch (err) {
       setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}`, isError: true }]);
@@ -206,7 +207,18 @@ const Dashboard = () => {
                         ) : (
                           <ReactMarkdown>{msg.content}</ReactMarkdown>
                         )}
-                        {msg.sql && <div className="db-msg-sql"><div className="sql-header">Generated SQL</div><code>{msg.sql}</code></div>}
+                        {msg.ml_draft && (
+                          <div className="db-msg-ml-draft">
+                            <div className="ml-draft-header">🤖 Local ML Draft Logic</div>
+                            <code>{msg.ml_draft}</code>
+                          </div>
+                        )}
+                        {msg.sql && (
+                          <div className="db-msg-sql">
+                            <div className="sql-header">Final Verified SQL</div>
+                            <code>{msg.sql}</code>
+                          </div>
+                        )}
                         {msg.results && msg.results.length > 0 && (
                           <div className="db-msg-results">
                             <div className="results-header">Preview ({msg.results.length} rows)</div>
@@ -218,7 +230,12 @@ const Dashboard = () => {
                             </div>
                           </div>
                         )}
-                        {msg.agents && msg.agents.length > 0 && <div className="db-message-agents">{msg.agents.map(a => <span key={a} className="agent-badge"><Cpu size={12}/> {a}</span>)}</div>}
+                        {msg.agents && msg.agents.length > 0 && (
+                          <div className="db-message-agents">
+                            <span className="agent-badge ml"><Cpu size={12}/> Cortex-ML (Lead)</span>
+                            {msg.agents.map(a => <span key={a} className="agent-badge"><Cpu size={12}/> {a}</span>)}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
