@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
+import ShinyText from '../components/ShinyText/ShinyText';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack/ScrollStack';
 import TypewriterCode from '../components/TypewriterCode/TypewriterCode';
@@ -100,8 +101,8 @@ export default function LandingPage({ onGetStarted }) {
           transition={{ duration: 0.9, ease: 'easeOut' }}
         >
           <h1 className="lp-hero-title">
-            Talk to Your Data<br />
-            <span className="lp-hero-gradient">Like It&apos;s Human</span>
+            <ShinyText text="Talk to Your Data" speed={3} color="rgba(255,255,255,0.75)" shineColor="#ffffff" /> <br />
+            <ShinyText text="Like It's Human" speed={3} color="#e100ff" shineColor="#ffffff" />
           </h1>
           <p className="lp-hero-sub">
             Transform complex PostgreSQL schemas into conversational insights
