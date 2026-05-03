@@ -191,32 +191,55 @@
 
 .db-message {
   display: flex;
-  flex-direction: column;
+  margin-bottom: 25px;
+  animation: messageIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.db-message.user { align-items: flex-end; }
-.db-message.assistant { align-items: flex-start; }
+@keyframes messageIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.db-message.user { justify-content: flex-end; }
 
 .db-message-bubble {
   max-width: 80%;
   padding: 16px 20px;
-  border-radius: 20px;
+  border-radius: 24px;
   font-size: 1rem;
   line-height: 1.6;
+  font-family: 'Outfit', sans-serif;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 .user .db-message-bubble {
-  background: #e100ff;
+  background: linear-gradient(135deg, #e100ff 0%, #7f00ff 100%);
   color: #fff;
   border-bottom-right-radius: 4px;
+  font-weight: 500;
 }
 
 .assistant .db-message-bubble {
   background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #eee;
   border-bottom-left-radius: 4px;
   position: relative;
+}
+
+.db-message-bubble strong {
+  color: #e100ff;
+  font-weight: 700;
+}
+
+.db-message-bubble ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.db-message-bubble li {
+  margin-bottom: 5px;
 }
 
 .assistant .db-message-bubble:has(.shiny-text) {
@@ -275,25 +298,35 @@
 
 .results-table-wrapper {
   overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.2);
 }
 
-.db-msg-results table {
+.results-table-wrapper table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.85rem;
 }
 
-.db-msg-results th {
+.results-table-wrapper th {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
   text-align: left;
-  padding: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e100ff;
 }
 
-.db-msg-results td {
-  padding: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.7);
+.results-table-wrapper td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.results-table-wrapper tr:hover td {
+  background: rgba(225, 0, 255, 0.03);
+  color: #fff;
 }
 
 .db-message-agents {
