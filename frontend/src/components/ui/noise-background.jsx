@@ -36,14 +36,12 @@ export const NoiseBackground = ({
   children,
   className,
   containerClassName,
-
   gradientColors = [
     "rgb(255, 100, 150)",
     "rgb(100, 150, 255)",
     "rgb(255, 200, 100)",
   ],
-
-  noiseIntensity = 0.2,
+  noiseIntensity = 0.05,
   speed = 0.1,
   backdropBlur = false,
   animating = true
@@ -52,147 +50,79 @@ export const NoiseBackground = ({
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
-  // Use spring animation for smooth movement
   const springX = useSpring(x, { stiffness: 100, damping: 30 });
   const springY = useSpring(y, { stiffness: 100, damping: 30 });
-
-  // Transform for top gradient strip
   const topGradientX = useTransform(springX, (val) => val * 0.1 - 50);
 
   const velocityRef = useRef({ x: 0, y: 0 });
   const lastDirectionChangeRef = useRef(0);
 
-  // Initialize position to center
   useEffect(() => {
     if (!containerRef.current) return;
-
-    const container = containerRef.current;
-    const rect = container.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    x.set(centerX);
-    y.set(centerY);
+    const rect = containerRef.current.getBoundingClientRect();
+    x.set(rect.width / 2);
+    y.set(rect.height / 2);
   }, [x, y]);
 
-  // Generate random velocity
-  const generateRandomVelocityRef = useRef(() => {
-    const angle = Math.random() * Math.PI * 2;
-    const magnitude = speed * (0.5 + Math.random() * 0.5); // Random speed between 0.5x and 1x
-    return {
-      x: Math.cos(angle) * magnitude,
-      y: Math.sin(angle) * magnitude,
-    };
-  });
-
-  // Update generateRandomVelocity when speed changes
-  useEffect(() => {
-    generateRandomVelocityRef.current = () => {
-      const angle = Math.random() * Math.PI * 2;
-      const magnitude = speed * (0.5 + Math.random() * 0.5);
-      return {
-        x: Math.cos(angle) * magnitude,
-        y: Math.sin(angle) * magnitude,
-      };
-    };
-    velocityRef.current = generateRandomVelocityRef.current();
-  }, [speed]);
-
-  // Animate using motion/react's useAnimationFrame
   useAnimationFrame((time) => {
     if (!animating || !containerRef.current) return;
-
     const rect = containerRef.current.getBoundingClientRect();
     const maxX = rect.width;
     const maxY = rect.height;
 
-    // Change direction randomly every 1.5-3 seconds
-    if (time - lastDirectionChangeRef.current > 1500 + Math.random() * 1500) {
-      velocityRef.current = generateRandomVelocityRef.current();
-      lastDirectionChangeRef.current = time;
-    }
-
-    // Update position based on velocity (deltaTime is ~16ms per frame at 60fps)
-    const deltaTime = 16; // Approximate frame time
-    const currentX = x.get();
-    const currentY = y.get();
-
-    let newX = currentX + velocityRef.current.x * deltaTime;
-    let newY = currentY + velocityRef.current.y * deltaTime;
-
-    // When hitting edges, generate a completely new random direction
-    const padding = 20; // Keep some distance from edges
-
-    if (
-      newX < padding ||
-      newX > maxX - padding ||
-      newY < padding ||
-      newY > maxY - padding
-    ) {
+    if (time - lastDirectionChangeRef.current > 2000) {
       const angle = Math.random() * Math.PI * 2;
-      const magnitude = speed * (0.5 + Math.random() * 0.5);
       velocityRef.current = {
-        x: Math.cos(angle) * magnitude,
-        y: Math.sin(angle) * magnitude,
+        x: Math.cos(angle) * speed,
+        y: Math.sin(angle) * speed,
       };
       lastDirectionChangeRef.current = time;
-      newX = Math.max(padding, Math.min(maxX - padding, newX));
-      newY = Math.max(padding, Math.min(maxY - padding, newY));
     }
 
-    x.set(newX);
-    y.set(newY);
+    const deltaTime = 16;
+    let newX = x.get() + velocityRef.current.x * deltaTime;
+    let newY = y.get() + velocityRef.current.y * deltaTime;
+
+    const padding = 10;
+    if (newX < padding || newX > maxX - padding || newY < padding || newY > maxY - padding) {
+      velocityRef.current.x *= -1;
+      velocityRef.current.y *= -1;
+    }
+
+    x.set(Math.max(0, Math.min(maxX, newX)));
+    y.set(Math.max(0, Math.min(maxY, newY)));
   });
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        "group relative overflow-hidden rounded-2xl bg-neutral-200 p-2 backdrop-blur-sm dark:bg-neutral-800",
-        "shadow-[0px_0.5px_1px_0px_var(--color-neutral-400)_inset,0px_1px_0px_0px_var(--color-neutral-100)]",
-        "dark:shadow-[0px_1px_0px_0px_var(--color-neutral-950)_inset,0px_1px_0px_0px_var(--color-neutral-800)]",
-        backdropBlur &&
-          "after:absolute after:inset-0 after:h-full after:w-full after:backdrop-blur-lg after:content-['']",
+        "relative overflow-hidden",
         containerClassName
       )}
-      style={
-        {
-          "--noise-opacity": noiseIntensity
-        }
-      }>
+      style={{ isolation: 'isolate' }}
+    >
       {/* Moving gradient layers */}
-      <GradientLayer
-        springX={springX}
-        springY={springY}
-        gradientColor={gradientColors[0]}
-        opacity={0.4}
-        multiplier={1} />
-      <GradientLayer
-        springX={springX}
-        springY={springY}
-        gradientColor={gradientColors[1]}
-        opacity={0.3}
-        multiplier={0.7} />
-      <GradientLayer
-        springX={springX}
-        springY={springY}
-        gradientColor={gradientColors[2] || gradientColors[0]}
-        opacity={0.25}
-        multiplier={1.2} />
+      <GradientLayer springX={springX} springY={springY} gradientColor={gradientColors[0]} opacity={0.3} multiplier={1} />
+      <GradientLayer springX={springX} springY={springY} gradientColor={gradientColors[1]} opacity={0.2} multiplier={0.7} />
+      
       {/* Top gradient strip */}
       <motion.div
-        className="absolute inset-x-0 top-0 h-1 rounded-t-2xl opacity-80 blur-sm"
+        className="absolute inset-x-0 top-0 h-[1px] opacity-50"
         style={{
-          background: `linear-gradient(to right, ${gradientColors.join(", ")})`,
+          background: `linear-gradient(to right, transparent, ${gradientColors.join(", ")}, transparent)`,
           x: animating ? topGradientX : 0,
         }} />
-      {/* Static Noise Pattern */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-inherit">
-        <img
-          src="https://assets.aceternity.com/noise.webp"
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-10"
-          style={{ mixBlendMode: "overlay" }} />
-      </div>
+
+      {/* CSS-only noise pattern (Stable) */}
+      <div 
+        className="pointer-events-none absolute inset-0 opacity-[0.05]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+          mixBlendMode: 'overlay'
+        }}
+      />
+
       {/* Content */}
       <div className={cn("relative z-10", className)}>{children}</div>
     </div>
