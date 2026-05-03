@@ -260,7 +260,10 @@ export default function LandingPage({ onGetStarted }) {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="lp-cta-title">Ready to unlock your <br/><span className="lp-hero-gradient">data&apos;s voice?</span></h2>
+          <h2 className="lp-cta-title">
+            <ShinyText text="Ready to unlock your" speed={3} color="#ffffff" shineColor="#b5b5b5" /> <br/>
+            <ShinyText text="data's voice?" speed={3} color="#e100ff" shineColor="#ffffff" />
+          </h2>
           <p className="lp-cta-sub">Join the next generation of autonomous data intelligence. Deploy your first agentic pipeline in minutes.</p>
           <NoiseBackground
             containerStyle={{ borderRadius: '1rem', padding: '2px', display: 'inline-block', cursor: 'pointer' }}
