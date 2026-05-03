@@ -92,11 +92,26 @@ export default function LandingPage({ onGetStarted }) {
           NLPCortexSQL
         </div>
         <NoiseBackground
-          containerClassName="rounded-full p-[1.5px]"
+          containerStyle={{ borderRadius: '9999px', padding: '2px' }}
           gradientColors={["#e100ff", "#00ff88"]}
-          noiseIntensity={0.1}
         >
-          <button className="px-6 py-1.5 bg-[#050508] rounded-full text-white text-sm font-semibold flex items-center gap-2 hover:bg-transparent transition-colors" onClick={onGetStarted}>
+          <button
+            onClick={onGetStarted}
+            style={{
+              padding: '0.4rem 1.4rem',
+              background: '#050508',
+              borderRadius: '9999px',
+              color: '#fff',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.4rem',
+              fontFamily: 'inherit',
+            }}
+          >
             Launch App →
           </button>
         </NoiseBackground>
@@ -119,13 +134,25 @@ export default function LandingPage({ onGetStarted }) {
           </p>
           <div className="lp-hero-actions">
             <NoiseBackground
-              containerClassName="rounded-xl p-[1px]"
+              containerStyle={{ borderRadius: '0.75rem', padding: '2px' }}
               gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
-              noiseIntensity={0.2}
             >
               <button
-                className="px-8 py-3 bg-[#050508] rounded-xl text-white font-bold flex items-center gap-2 hover:bg-transparent transition-colors"
                 onClick={onGetStarted}
+                style={{
+                  padding: '0.75rem 2rem',
+                  background: '#050508',
+                  borderRadius: '0.6rem',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontFamily: 'inherit',
+                }}
               >
                 Get Started <span className="lp-btn-arrow">→</span>
               </button>
@@ -216,21 +243,30 @@ export default function LandingPage({ onGetStarted }) {
         >
           <h2 className="lp-cta-title">Ready to unlock your <br/><span className="lp-hero-gradient">data&apos;s voice?</span></h2>
           <p className="lp-cta-sub">Join the next generation of autonomous data intelligence. Deploy your first agentic pipeline in minutes.</p>
-          <motion.button 
-            className="lp-btn-primary lp-cta-btn"
-            onClick={onGetStarted}
-            style={{ padding: 0, overflow: 'hidden', background: 'transparent', border: 'none' }}
+          <NoiseBackground
+            containerStyle={{ borderRadius: '1rem', padding: '2px', display: 'inline-block', cursor: 'pointer' }}
+            gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
           >
-            <NoiseBackground
-              containerClassName="rounded-xl p-0"
-              gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
-              noiseIntensity={0.15}
+            <button
+              onClick={onGetStarted}
+              style={{
+                padding: '1.1rem 3rem',
+                background: '#050508',
+                borderRadius: '0.85rem',
+                color: '#fff',
+                fontWeight: 800,
+                fontSize: '1.05rem',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.6rem',
+                fontFamily: 'inherit',
+              }}
             >
-              <div className="px-10 py-5 text-white font-bold flex items-center gap-2">
-                Launch NLPCortexSQL <span className="lp-btn-arrow">→</span>
-              </div>
-            </NoiseBackground>
-          </motion.button>
+              Launch NLPCortexSQL <span className="lp-btn-arrow">→</span>
+            </button>
+          </NoiseBackground>
         </motion.div>
       </section>
 
