@@ -73,7 +73,7 @@ const AuthPage = () => {
                   className="auth-input-group"
                 >
                   <label>Full Name</label>
-                  <input type="text" placeholder="John Doe" required />
+                  <input type="text" placeholder="Your full name" required />
                 </motion.div>
               )}
             </AnimatePresence>
