@@ -209,6 +209,77 @@
   border-bottom-left-radius: 4px;
 }
 
+.db-message-bubble.error {
+  background: rgba(255, 85, 85, 0.1);
+  border-color: rgba(255, 85, 85, 0.2);
+  color: #ff5555;
+}
+
+.db-msg-sql {
+  margin-top: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sql-header {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.db-msg-sql code {
+  color: #00ff88;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem;
+  display: block;
+  white-space: pre-wrap;
+}
+
+.db-msg-results {
+  margin-top: 15px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.results-header {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.results-table-wrapper {
+  overflow-x: auto;
+}
+
+.db-msg-results table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.db-msg-results th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e100ff;
+}
+
+.db-msg-results td {
+  padding: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .db-message-agents {
   display: flex;
   gap: 8px;

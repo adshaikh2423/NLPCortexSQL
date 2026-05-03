@@ -20,6 +20,7 @@ import './Dashboard.css';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('chat');
+  const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([
     { role: 'assistant', content: 'System online. Agents standing by. How can I help you explore your data today?', agents: [] }
   ]);
@@ -38,26 +39,75 @@ const Dashboard = () => {
     navigate('/');
   };
 
-  const handleFileUpload = (e) => {
-    const uploadedFiles = Array.from(e.target.files);
-    setFiles(prev => [...prev, ...uploadedFiles]);
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    // Use filename (without extension) as table name
+    const tableName = file.name.split('.')[0].replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+    formData.append('table_name', tableName);
+
+    try {
+      const response = await fetch('http://localhost:8000/upload', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Upload failed");
+
+      setFiles(prev => [...prev, { name: file.name, table: tableName, status: 'Ready' }]);
+      alert(`Success: ${file.name} ingested as table '${tableName}'`);
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSendMessage = () => {
-    if (!input.trim()) return;
+  const handleSendMessage = async () => {
+    if (!input.trim() || loading) return;
     
-    const newMsg = { role: 'user', content: input };
-    setMessages(prev => [...prev, newMsg]);
+    const userMsg = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMsg]);
+    const currentInput = input;
     setInput('');
+    setLoading(true);
 
-    // Mock agentic response (we will connect to real backend next)
-    setTimeout(() => {
+    try {
+      const formData = new FormData();
+      formData.append('query', currentInput);
+
+      const response = await fetch('http://localhost:8000/chat', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Query failed");
+
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'Analyzing your request through the 5-agent pipeline...',
-        agents: ['Supervisor', 'Reasoner']
+        content: data.answer,
+        sql: data.sql,
+        results: data.data,
+        agents: ['Supervisor', 'Reasoner', 'SQL Agent', 'Executor'] // Real pipeline flow
       }]);
-    }, 1000);
+
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}`, isError: true }]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -146,8 +196,38 @@ const Dashboard = () => {
                 <div className="db-messages-container">
                   {messages.map((msg, i) => (
                     <div key={i} className={`db-message ${msg.role}`}>
-                      <div className="db-message-bubble">
+                      <div className={`db-message-bubble ${msg.isError ? 'error' : ''}`}>
                         {msg.content}
+                        
+                        {msg.sql && (
+                          <div className="db-msg-sql">
+                            <div className="sql-header">Generated SQL</div>
+                            <code>{msg.sql}</code>
+                          </div>
+                        )}
+
+                        {msg.results && msg.results.length > 0 && (
+                          <div className="db-msg-results">
+                            <div className="results-header">Result Preview ({msg.results.length} rows)</div>
+                            <div className="results-table-wrapper">
+                              <table>
+                                <thead>
+                                  <tr>
+                                    {Object.keys(msg.results[0]).map(k => <th key={k}>{k}</th>)}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {msg.results.slice(0, 5).map((row, ri) => (
+                                    <tr key={ri}>
+                                      {Object.values(row).map((val, vi) => <td key={vi}>{String(val)}</td>)}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        )}
+
                         {msg.agents && msg.agents.length > 0 && (
                           <div className="db-message-agents">
                             {msg.agents.map(a => (
