@@ -88,6 +88,21 @@ const AuthPage = () => {
               <input type="password" placeholder="••••••••" required />
             </div>
 
+            <AnimatePresence mode="wait">
+              {!isLogin && (
+                <motion.div 
+                  key="confirm-password"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="auth-input-group"
+                >
+                  <label>Confirm Password</label>
+                  <input type="password" placeholder="••••••••" required />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="auth-actions">
               <NoiseBackground
                 containerStyle={{ borderRadius: '0.75rem', padding: '2px', width: '100%' }}
