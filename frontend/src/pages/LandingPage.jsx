@@ -101,7 +101,7 @@ export default function LandingPage({ onGetStarted }) {
           transition={{ duration: 0.9, ease: 'easeOut' }}
         >
           <h1 className="lp-hero-title">
-            <ShinyText text="Talk to Your Data" speed={3} color="rgba(255,255,255,0.75)" shineColor="#ffffff" /> <br />
+            <ShinyText text="Talk to Your Data" speed={3} color="#b5b5b5" shineColor="#ffffff" /> <br />
             <ShinyText text="Like It's Human" speed={3} color="#e100ff" shineColor="#ffffff" />
           </h1>
           <p className="lp-hero-sub">
