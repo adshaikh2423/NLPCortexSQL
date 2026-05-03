@@ -186,11 +186,11 @@ export const NoiseBackground = ({
           x: animating ? topGradientX : 0,
         }} />
       {/* Static Noise Pattern */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-inherit">
         <img
           src="https://assets.aceternity.com/noise.webp"
           alt=""
-          className="h-full w-full object-cover opacity-[var(--noise-opacity)]"
+          className="absolute inset-0 h-full w-full object-cover opacity-10"
           style={{ mixBlendMode: "overlay" }} />
       </div>
       {/* Content */}
