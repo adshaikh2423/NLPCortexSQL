@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 import ShinyText from '../components/ShinyText/ShinyText';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
 import ScrollStack, { ScrollStackItem } from '../components/ScrollStack/ScrollStack';
@@ -69,8 +70,11 @@ const AGENT_STEPS = [
   { label: 'Executor', detail: 'Running query...', done: false },
 ];
 
-export default function LandingPage({ onGetStarted }) {
+export default function LandingPage() {
+  const navigate = useNavigate();
   const [, setHovered] = useState(null);
+
+  const handleLaunch = () => navigate('/signup');
 
   return (
     <div className="lp-root">
@@ -96,7 +100,7 @@ export default function LandingPage({ onGetStarted }) {
           gradientColors={["#e100ff", "#00ff88"]}
         >
           <button
-            onClick={onGetStarted}
+            onClick={handleLaunch}
             style={{
               padding: '0.4rem 1.4rem',
               background: '#050508',
@@ -138,7 +142,7 @@ export default function LandingPage({ onGetStarted }) {
               gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
             >
               <button
-                onClick={onGetStarted}
+                onClick={handleLaunch}
                 style={{
                   padding: '0.75rem 2rem',
                   background: '#050508',
@@ -270,7 +274,7 @@ export default function LandingPage({ onGetStarted }) {
             gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
           >
             <button
-              onClick={onGetStarted}
+              onClick={handleLaunch}
               style={{
                 padding: '1.1rem 3rem',
                 background: '#050508',
