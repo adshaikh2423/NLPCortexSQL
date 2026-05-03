@@ -8,6 +8,7 @@ import imgMultiAgent from '../assets/card_multi_agent.png';
 import imgSelfHeal from '../assets/card_self_healing.png';
 import imgSchema from '../assets/card_schema_memory.png';
 import imgSecure from '../assets/card_secure_exec.png';
+import { NoiseBackground } from '../components/ui/noise-background';
 import './LandingPage.css';
 
 const STACK_CARDS = [
@@ -90,7 +91,15 @@ export default function LandingPage({ onGetStarted }) {
           <span className="lp-nav-dot" />
           NLPCortexSQL
         </div>
-        <button className="lp-btn-outline" onClick={onGetStarted}>Launch App →</button>
+        <NoiseBackground
+          containerClassName="rounded-full p-[1.5px]"
+          gradientColors={["#e100ff", "#00ff88"]}
+          noiseIntensity={0.1}
+        >
+          <button className="px-6 py-1.5 bg-[#050508] rounded-full text-white text-sm font-semibold flex items-center gap-2 hover:bg-transparent transition-colors" onClick={onGetStarted}>
+            Launch App →
+          </button>
+        </NoiseBackground>
       </nav>
 
       <section className="lp-hero">
@@ -109,12 +118,18 @@ export default function LandingPage({ onGetStarted }) {
             using a 5-agent LangGraph pipeline and hybrid Gemini intelligence.
           </p>
           <div className="lp-hero-actions">
-            <motion.button
-              className="lp-btn-primary" onClick={onGetStarted}
-              whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+            <NoiseBackground
+              containerClassName="rounded-xl p-[1px]"
+              gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
+              noiseIntensity={0.2}
             >
-              Get Started <span className="lp-btn-arrow">→</span>
-            </motion.button>
+              <button
+                className="px-8 py-3 bg-[#050508] rounded-xl text-white font-bold flex items-center gap-2 hover:bg-transparent transition-colors"
+                onClick={onGetStarted}
+              >
+                Get Started <span className="lp-btn-arrow">→</span>
+              </button>
+            </NoiseBackground>
             <motion.a
               href="https://github.com/adshaikh2423/NLPCortexSQL"
               target="_blank" rel="noreferrer"
@@ -204,10 +219,17 @@ export default function LandingPage({ onGetStarted }) {
           <motion.button 
             className="lp-btn-primary lp-cta-btn"
             onClick={onGetStarted}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            style={{ padding: 0, overflow: 'hidden', background: 'transparent', border: 'none' }}
           >
-            Launch NLPCortexSQL <span className="lp-btn-arrow">→</span>
+            <NoiseBackground
+              containerClassName="rounded-xl p-0"
+              gradientColors={["#e100ff", "#00ff88", "#cf6fff"]}
+              noiseIntensity={0.15}
+            >
+              <div className="px-10 py-5 text-white font-bold flex items-center gap-2">
+                Launch NLPCortexSQL <span className="lp-btn-arrow">→</span>
+              </div>
+            </NoiseBackground>
           </motion.button>
         </motion.div>
       </section>
