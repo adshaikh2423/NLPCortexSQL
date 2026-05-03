@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
 function GradientLayer({ springX, springY, gradientColor, opacity, multiplier }) {
   const x = useTransform(springX, (val) => val * multiplier);
   const y = useTransform(springY, (val) => val * multiplier);
-  const background = useMotionTemplate`radial-gradient(circle at ${x}px ${y}px, ${gradientColor} 0%, transparent 60%)`;
+  const background = useMotionTemplate`radial-gradient(circle at ${x}px ${y}px, ${gradientColor} 0%, transparent 80%)`;
 
   return (
     <motion.div

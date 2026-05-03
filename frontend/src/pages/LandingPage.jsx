@@ -157,13 +157,32 @@ export default function LandingPage({ onGetStarted }) {
                 Get Started <span className="lp-btn-arrow">→</span>
               </button>
             </NoiseBackground>
-            <motion.a
-              href="https://github.com/adshaikh2423/NLPCortexSQL"
-              target="_blank" rel="noreferrer"
-              className="lp-btn-ghost" whileHover={{ scale: 1.04 }}
+            <NoiseBackground
+              containerStyle={{ borderRadius: '0.75rem', padding: '2px', display: 'inline-block' }}
+              gradientColors={["#6366f1", "#a78bfa", "#818cf8"]}
             >
-              GitHub
-            </motion.a>
+              <a
+                href="https://github.com/adshaikh2423/NLPCortexSQL"
+                target="_blank" rel="noreferrer"
+                style={{
+                  padding: '0.75rem 2rem',
+                  background: '#050508',
+                  borderRadius: '0.6rem',
+                  color: '#fff',
+                  fontWeight: 700,
+                  fontSize: '1rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  fontFamily: 'inherit',
+                  textDecoration: 'none',
+                }}
+              >
+                GitHub
+              </a>
+            </NoiseBackground>
           </div>
         </motion.div>
 
