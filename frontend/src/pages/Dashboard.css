@@ -843,6 +843,13 @@
   overflow-y: auto;
 }
 
+.sql-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .sql-copy-btn {
   display: flex;
   align-items: center;
