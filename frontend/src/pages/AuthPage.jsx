@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
 import { NoiseBackground } from '../components/ui/noise-background';
 import ShinyText from '../components/ShinyText/ShinyText';
@@ -11,6 +11,7 @@ const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -170,14 +171,23 @@ const AuthPage = () => {
 
             <div className="auth-input-group">
               <label>Password</label>
-              <input 
-                name="password"
-                type="password" 
-                placeholder="••••••••" 
-                required 
-                value={formData.password}
-                onChange={handleInputChange}
-              />
+              <div className="password-input-wrapper">
+                <input 
+                  name="password"
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="••••••••" 
+                  required 
+                  value={formData.password}
+                  onChange={handleInputChange}
+                />
+                <button 
+                  type="button" 
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <AnimatePresence mode="wait">
@@ -190,14 +200,23 @@ const AuthPage = () => {
                   className="auth-input-group"
                 >
                   <label>Confirm Password</label>
-                  <input 
-                    name="confirmPassword"
-                    type="password" 
-                    placeholder="••••••••" 
-                    required 
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                  />
+                  <div className="password-input-wrapper">
+                    <input 
+                      name="confirmPassword"
+                      type={showPassword ? "text" : "password"} 
+                      placeholder="••••••••" 
+                      required 
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                    />
+                    <button 
+                      type="button" 
+                      className="password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>
