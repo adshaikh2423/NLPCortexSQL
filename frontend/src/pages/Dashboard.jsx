@@ -13,6 +13,8 @@ import {
   FileSpreadsheet,
   Trash2,
   X,
+  Copy,
+  Check,
   Clock
 } from 'lucide-react';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
@@ -32,6 +34,7 @@ const Dashboard = () => {
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [streamingAgent, setStreamingAgent] = useState(null);
   const [expandedMessages, setExpandedMessages] = useState(new Set());
+  const [copiedSQL, setCopiedSQL] = useState(null);
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
 
@@ -147,6 +150,12 @@ const Dashboard = () => {
       else next.add(index);
       return next;
     });
+  };
+
+  const handleCopySQL = (sql, index) => {
+    navigator.clipboard.writeText(sql);
+    setCopiedSQL(index);
+    setTimeout(() => setCopiedSQL(null), 2000);
   };
 
   const handleSendMessage = async () => {
@@ -280,7 +289,13 @@ const Dashboard = () => {
                         )}
                         {msg.sql && (
                           <div className="db-msg-sql">
-                            <div className="sql-header">Final Verified SQL</div>
+                            <div className="sql-header">
+                              <span>Final Verified SQL</span>
+                              <button onClick={() => handleCopySQL(msg.sql, i)} className="sql-copy-btn">
+                                {copiedSQL === i ? <Check size={14}/> : <Copy size={14}/>}
+                                {copiedSQL === i ? "Copied!" : "Copy"}
+                              </button>
+                            </div>
                             <code>{msg.sql}</code>
                           </div>
                         )}
