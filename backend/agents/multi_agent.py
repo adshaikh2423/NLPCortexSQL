@@ -181,6 +181,14 @@ def reflection_agent(state: MultiAgentState) -> MultiAgentState:
 def executor_agent(state: MultiAgentState) -> MultiAgentState:
     print("[EXECUTOR] Running SQL...")
     sql = state.get('generated_sql', "").strip()
+    
+    # Check if SQL is empty or only contains comments
+    clean_sql = re.sub(r'--.*', '', sql).strip()
+    if not clean_sql:
+        print("[EXECUTOR] Descriptive query detected (comments only). Skipping execution.")
+        state['next_agent'] = "formatter"
+        return state
+
     if not sql:
         state['next_agent'] = "formatter"
         return state
@@ -201,28 +209,42 @@ def executor_agent(state: MultiAgentState) -> MultiAgentState:
     return state
 
 def formatter_agent(state: MultiAgentState) -> MultiAgentState:
-    print("[FORMATTER] Finalizing insight report...")
+    print("[FORMATTER] Finalizing elite insight report...")
     if state['error_message'] and not state['query_results']:
-        state['final_answer'] = f"The analysis hit a technical hurdle: {state['error_message']}"
+        state['final_answer'] = f"The analysis encountered a technical challenge: {state['error_message']}. However, based on the schema, I can tell you that this operation requires specific column mapping."
         state['next_agent'] = END
         return state
     
-    prompt = f"""You are a Senior Data Insight Strategist.
-The user asked: "{state['user_query']}"
-The data retrieved from the database: {str(state['query_results'][:5])}
+    prompt = f"""You are the Lead Data Strategy Architect. 
+Your goal is to provide a "Simple yet Perfect" in-depth explanation of the findings.
 
-Your task is to write a high-impact, professional summary.
-1. DO NOT just list column names and values. 
-2. Identify the most important records or trends (e.g., "The top performer is...", "Most bookings were...").
-3. Use Markdown (bolding, bullet points) to make it scannable.
-4. Keep it concise (3-4 sentences max).
-5. Address the user's question directly and naturally.
+User Query: "{state['user_query']}"
+SQL Context: {state['generated_sql']}
+Retrieved Data (Preview): {str(state['query_results'][:10])}
+Table Schema: {state['db_schema']}
+
+Structure your response with these professional headers:
+
+1. ANALYTICAL SUMMARY:
+Explain EXACTLY what this data tells us in relation to the user's question. Be simple but powerful.
+
+2. KEY DATA POINTS & INSIGHTS:
+Break down the most significant findings. If it's a list, explain why these records matter. If it's a schema query, explain the significance of the primary columns and their intended use.
+
+3. ARCHITECTURAL OVERVIEW:
+Explain each and every point of the table structure or the query logic in depth. Why was this specific SQL used? What does the resulting structure allow for in future analysis?
+
+Guidelines:
+- ABSOLUTELY NO EMOJIS.
+- Use bolding for emphasis.
+- Explain technical concepts in clear, industrial language.
+- Ensure the user feels the "Intelligence" behind the response.
 """
     try:
         response = client.models.generate_content(model=MODEL_ID, contents=prompt)
         state['final_answer'] = response.text.strip()
     except:
-        state['final_answer'] = "Data analysis complete. Insights are available in the preview table below."
+        state['final_answer'] = "Data analysis successfully finalized. Please review the structure and results in the panels below for a complete architectural overview."
     state['next_agent'] = END
     return state
 
