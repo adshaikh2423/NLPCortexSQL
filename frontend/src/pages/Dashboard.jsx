@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [selectedSchema, setSelectedSchema] = useState(null);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [streamingAgent, setStreamingAgent] = useState(null);
+  const [expandedMessages, setExpandedMessages] = useState(new Set());
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
 
@@ -137,6 +138,15 @@ const Dashboard = () => {
     } catch (err) {
       alert("Error deleting file");
     }
+  };
+
+  const toggleExpand = (index) => {
+    setExpandedMessages(prev => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
   };
 
   const handleSendMessage = async () => {
@@ -276,11 +286,22 @@ const Dashboard = () => {
                         )}
                         {msg.results && msg.results.length > 0 && (
                           <div className="db-msg-results">
-                            <div className="results-header">Preview ({msg.results.length} rows)</div>
-                            <div className="results-table-wrapper">
+                            <div className="results-header">
+                              <span>Results ({msg.results.length} rows)</span>
+                              {msg.results.length > 5 && (
+                                <button onClick={() => toggleExpand(i)} className="expand-btn">
+                                  {expandedMessages.has(i) ? "Show Less" : "View All"}
+                                </button>
+                              )}
+                            </div>
+                            <div className={`results-table-wrapper ${expandedMessages.has(i) ? 'expanded' : ''}`}>
                               <table>
                                 <thead><tr>{Object.keys(msg.results[0]).map(k => <th key={k}>{k}</th>)}</tr></thead>
-                                <tbody>{msg.results.slice(0, 5).map((row, ri) => <tr key={ri}>{Object.values(row).map((val, vi) => <td key={vi}>{String(val)}</td>)}</tr>)}</tbody>
+                                <tbody>
+                                  {(expandedMessages.has(i) ? msg.results : msg.results.slice(0, 5)).map((row, ri) => (
+                                    <tr key={ri}>{Object.values(row).map((val, vi) => <td key={vi}>{String(val)}</td>)}</tr>
+                                  ))}
+                                </tbody>
                               </table>
                             </div>
                           </div>
