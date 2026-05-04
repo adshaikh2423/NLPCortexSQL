@@ -140,31 +140,64 @@ const Dashboard = () => {
 
   const handleSendMessage = async () => {
     if (!input.trim() || loading) return;
+
     const userMsg = { role: 'user', content: input };
     setMessages(prev => [...prev, userMsg]);
-    const currentInput = input;
     setInput('');
     setLoading(true);
+    setStreamingAgent('INITIALIZING');
+
     try {
       const formData = new FormData();
-      formData.append('query', currentInput);
+      formData.append('query', input);
+
       const response = await fetch('http://localhost:8000/chat', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         body: formData
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Query failed");
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: data.answer,
-        sql: data.sql,
-        ml_draft: data.ml_draft,
-        results: data.data[0],
-        agents: ['Supervisor', 'Reasoner', 'Reflector', 'Executor']
-      }]);
+
+      if (!response.ok) throw new Error("Connection interrupted");
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.trim().startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.trim().slice(6));
+              
+              if (data.agent) {
+                setStreamingAgent(data.agent.toUpperCase());
+              }
+              
+              if (data.done) {
+                setMessages(prev => [...prev, {
+                  role: 'assistant',
+                  content: data.answer,
+                  sql: data.sql,
+                  ml_draft: data.ml_draft,
+                  results: data.data[0],
+                  agents: ['Supervisor', 'Reasoner', 'Reflector', 'Executor']
+                }]);
+                setStreamingAgent(null);
+              }
+            } catch (e) {
+              console.error("Stream parse error", e);
+            }
+          }
+        }
+      }
     } catch (err) {
-      setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${err.message}`, isError: true }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: `System Error: ${err.message}`, isError: true }]);
+      setStreamingAgent(null);
     } finally {
       setLoading(false);
     }
@@ -260,6 +293,18 @@ const Dashboard = () => {
                       </div>
                     </div>
                   ))}
+                  
+                  {streamingAgent && (
+                    <div className="db-message assistant streaming">
+                      <div className="db-message-bubble loading">
+                        <div className="streaming-trace">
+                          <span className="trace-pulse" />
+                          <span className="trace-text">SYSTEM ACTIVE: {streamingAgent}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
                   <div ref={chatEndRef} />
                 </div>
                 <div className="db-input-area">
