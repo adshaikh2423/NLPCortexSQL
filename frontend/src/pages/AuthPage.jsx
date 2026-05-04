@@ -117,7 +117,7 @@ const AuthPage = () => {
           <div className="auth-header">
             <div className="auth-logo" onClick={() => navigate('/')}>
               <img src="/logo.png" alt="CortexSQL Logo" className="auth-logo-img" />
-              CortexSQL
+              <ShinyText text="CortexSQL" speed={3} color="#ffffff" shineColor="#e100ff" />
             </div>
             <h2 className="auth-title">
               <ShinyText 

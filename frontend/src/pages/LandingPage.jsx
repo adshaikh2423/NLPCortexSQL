@@ -93,7 +93,7 @@ export default function LandingPage() {
       <nav className="lp-nav">
         <div className="lp-nav-brand">
           <img src="/logo.png" alt="CortexSQL Logo" className="lp-nav-logo" />
-          CortexSQL
+          <ShinyText text="CortexSQL" speed={3} color="#ffffff" shineColor="#e100ff" />
         </div>
         <NoiseBackground
           containerStyle={{ borderRadius: '9999px', padding: '2px' }}

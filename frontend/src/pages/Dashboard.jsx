@@ -266,7 +266,7 @@ const Dashboard = () => {
       <aside className="db-sidebar">
         <div className="db-logo">
           <img src="/logo.png" alt="CortexSQL Logo" className="db-logo-img" />
-          <span>CortexSQL</span>
+          <ShinyText text="CortexSQL" speed={3} color="#ffffff" shineColor="#e100ff" />
         </div>
         <nav className="db-nav">
           <button className={`db-nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => setActiveTab('chat')}><MessageSquare size={20} /><span>Agentic Chat</span></button>
