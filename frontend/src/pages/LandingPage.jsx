@@ -92,8 +92,8 @@ export default function LandingPage() {
 
       <nav className="lp-nav">
         <div className="lp-nav-brand">
-          <span className="lp-nav-dot" />
-          NLPCortexSQL
+          <img src="/logo.png" alt="CortexSQL Logo" className="lp-nav-logo" />
+          CortexSQL
         </div>
         <NoiseBackground
           containerStyle={{ borderRadius: '9999px', padding: '2px' }}

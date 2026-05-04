@@ -57,12 +57,13 @@
   letter-spacing: -0.4px;
 }
 
-.lp-nav-dot {
-  width: 8px; height: 8px;
+.lp-nav-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
   border-radius: 50%;
-  background: #e100ff;
-  box-shadow: 0 0 10px #e100ff;
-  animation: pulse 2s infinite;
+  border: 1px solid rgba(225, 0, 255, 0.2);
+  filter: drop-shadow(0 0 8px rgba(225, 0, 255, 0.4));
 }
 
 @keyframes pulse {
