@@ -30,6 +30,7 @@ const Dashboard = () => {
   const [history, setHistory] = useState([]);
   const [selectedSchema, setSelectedSchema] = useState(null);
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [streamingAgent, setStreamingAgent] = useState(null);
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
 
