@@ -264,7 +264,10 @@ const Dashboard = () => {
       </div>
 
       <aside className="db-sidebar">
-        <div className="db-logo"><div className="db-logo-dot" /><span>CortexSQL</span></div>
+        <div className="db-logo">
+          <img src="/logo.png" alt="CortexSQL Logo" className="db-logo-img" />
+          <span>CortexSQL</span>
+        </div>
         <nav className="db-nav">
           <button className={`db-nav-item ${activeTab === 'chat' ? 'active' : ''}`} onClick={() => setActiveTab('chat')}><MessageSquare size={20} /><span>Agentic Chat</span></button>
           <button className={`db-nav-item ${activeTab === 'data' ? 'active' : ''}`} onClick={() => setActiveTab('data')}><Database size={20} /><span>Data Sources</span></button>

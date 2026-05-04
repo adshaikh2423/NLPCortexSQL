@@ -40,12 +40,11 @@
   padding-left: 10px;
 }
 
-.db-logo-dot {
-  width: 12px;
-  height: 12px;
-  background: #e100ff;
-  border-radius: 50%;
-  box-shadow: 0 0 15px #e100ff;
+.db-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(225, 0, 255, 0.4));
 }
 
 .db-nav {

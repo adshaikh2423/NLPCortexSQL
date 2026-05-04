@@ -87,12 +87,11 @@
   opacity: 1;
 }
 
-.auth-logo-dot {
-  width: 10px;
-  height: 10px;
-  background: #e100ff;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #e100ff;
+.auth-logo-img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(225, 0, 255, 0.4));
 }
 
 .auth-title {

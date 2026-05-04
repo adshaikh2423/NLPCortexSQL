@@ -116,8 +116,8 @@ const AuthPage = () => {
         <div className="auth-card">
           <div className="auth-header">
             <div className="auth-logo" onClick={() => navigate('/')}>
-              <span className="auth-logo-dot" />
-              NLPCortexSQL
+              <img src="/logo.png" alt="CortexSQL Logo" className="auth-logo-img" />
+              CortexSQL
             </div>
             <h2 className="auth-title">
               <ShinyText 
