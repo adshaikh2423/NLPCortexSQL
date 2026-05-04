@@ -138,3 +138,30 @@ def execute_query(sql_query, user_id=None):
         return None, str(e)
     finally:
         conn.close()
+
+def delete_user_table(table_name, user_id):
+    session = get_db_session()
+    engine = get_sqlalchemy_engine()
+    try:
+        # Check if table belongs to user
+        table_meta = session.query(DynamicTable).filter(
+            DynamicTable.table_name == table_name,
+            DynamicTable.user_id == user_id
+        ).first()
+        
+        if not table_meta:
+            return False, "Table not found or access denied."
+        
+        # Drop the actual table
+        with engine.connect() as conn:
+            conn.execute(f'DROP TABLE IF EXISTS "{table_name}"')
+        
+        # Remove metadata
+        session.delete(table_meta)
+        session.commit()
+        return True, f"Table '{table_name}' deleted successfully."
+    except Exception as e:
+        session.rollback()
+        return False, str(e)
+    finally:
+        session.close()

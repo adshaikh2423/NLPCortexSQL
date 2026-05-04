@@ -76,3 +76,20 @@ class DynamicTable(Base):
         Index('idx_dynamic_table_name', 'table_name'),
         Index('idx_dynamic_table_user', 'user_id'),
     )
+
+class AnalysisLog(Base):
+    __tablename__ = "analysis_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    query = Column(Text, nullable=False)
+    sql = Column(Text)
+    answer = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    owner = relationship("User")
+
+    __table_args__ = (
+        Index('idx_analysis_log_user', 'user_id'),
+        Index('idx_analysis_log_created', 'created_at'),
+    )

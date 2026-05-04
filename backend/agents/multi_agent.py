@@ -1,6 +1,6 @@
 """
 Multi-Agent System for NL2SQL
-Architecture: Supervisor -> Reasoning -> Reflection -> Executor -> Formatter
+Architecture: ML Model (Primary) -> Supervisor -> Reasoning -> Reflection -> Executor -> Formatter
 """
 import os
 import json
@@ -21,6 +21,9 @@ MODEL_ID = settings.MODEL_ID
 # LOCAL ML MODEL INITIALIZATION
 # ============================================================================
 LOCAL_MODEL_READY = False
+local_tokenizer = None
+local_model = None
+
 try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(os.path.dirname(current_dir), "fine_tuned_sql_model")
@@ -56,32 +59,52 @@ class MultiAgentState(TypedDict):
     potential_matches: List[str]
     user_id: int
     last_failed_sql: str
+    ml_draft_sql: str
 
 # ============================================================================
 # AGENTS
 # ============================================================================
 
+def ml_model_agent(state: MultiAgentState) -> MultiAgentState:
+    """The Primary Local ML Model generates the first draft."""
+    print("[ML_MODEL] Generating SQL Logic...")
+    if LOCAL_MODEL_READY:
+        try:
+            # Prepare context-aware prompt for the T5 model
+            input_text = f"translate English to SQL: {state['user_query']} \n Context: {state['db_schema']}"
+            inputs = local_tokenizer(input_text, return_tensors="pt", max_length=512, truncation=True)
+            with torch.no_grad():
+                outputs = local_model.generate(**inputs, max_length=512)
+            state['ml_draft_sql'] = local_tokenizer.decode(outputs[0], skip_special_tokens=True)
+            state['generated_sql'] = state['ml_draft_sql'] # Set as primary draft
+        except Exception as e:
+            print(f"Local Model Error: {e}")
+            state['ml_draft_sql'] = ""
+    
+    state['next_agent'] = "supervisor"
+    return state
+
 def supervisor_agent(state: MultiAgentState) -> MultiAgentState:
-    print("🎯 SUPERVISOR: Analyzing query context...")
+    print("[SUPERVISOR] Validating model output and schema...")
     if "No user-uploaded tables found" in state['db_schema']:
         state['final_answer'] = "Protocol Interrupted: No active knowledge base detected. Please upload data."
         state['next_agent'] = END
         return state
 
     user_tables = re.findall(r"Table:\s*(\w+)", state['db_schema'], re.IGNORECASE)
-    prompt = f"""You are a SQL Architect Supervisor.
-Analyze this request: "{state['user_query']}"
-AVAILABLE TABLES: {user_tables}
+    prompt = f"""You are a SQL Architect Supervisor. 
+An ML model has generated this SQL: {state.get('ml_draft_sql', 'NONE')}
+Review it against the USER REQUEST: "{state['user_query']}"
 SCHEMA DETAILS:
 {state['db_schema']}
 
 Return JSON ONLY:
 {{
+    "is_ml_output_correct": true/false,
     "target_tables": ["table1"],
     "query_type": "single|join|aggregation",
     "is_ambiguous": true/false,
-    "confidence_score": 0.0-1.0,
-    "reasoning": "Brief explanation"
+    "confidence_score": 0.0-1.0
 }}
 """
     try:
@@ -94,44 +117,28 @@ Return JSON ONLY:
         state['query_type'] = data.get("query_type", "single")
         state['is_ambiguous'] = data.get("is_ambiguous", False)
 
-        if not state['target_tables']:
-            for table in user_tables:
-                if table.lower() in state['user_query'].lower():
-                    state['target_tables'] = [table]
-                    state['is_ambiguous'] = False
-                    break
+        # If ML output is correct, skip to reflection/execution
+        if data.get("is_ml_output_correct") and state['ml_draft_sql']:
+            state['next_agent'] = "reflection"
+        else:
+            state['next_agent'] = "reasoning"
 
-        if state['is_ambiguous'] and len(user_tables) > 1:
-            state['potential_matches'] = user_tables
-            state['next_agent'] = END
-            return state
-
-        state['next_agent'] = "reasoning"
     except Exception as e:
         state['next_agent'] = "reasoning"
     return state
 
 def reasoning_agent(state: MultiAgentState) -> MultiAgentState:
-    print("🧠 REASONING: Building query plan...")
-    local_draft_sql = ""
-    if LOCAL_MODEL_READY:
-        try:
-            input_text = f"translate English to SQL: {state['user_query']} \n Context: {state['db_schema']}"
-            inputs = local_tokenizer(input_text, return_tensors="pt", max_length=512, truncation=True)
-            with torch.no_grad():
-                outputs = local_model.generate(**inputs, max_length=512)
-            local_draft_sql = local_tokenizer.decode(outputs[0], skip_special_tokens=True)
-        except Exception as e:
-            print(f"⚠️ Local Model Error: {e}")
+    print("[REASONING] Refining query logic...")
+    error_feedback = f"\nPREVIOUS FAILED SQL: {state.get('last_failed_sql')}\nERROR: {state['error_message']}" if state['error_message'] else ""
     
-    error_feedback = f"\n❌ PREVIOUS FAILED SQL: {state.get('last_failed_sql')}\nERROR: {state['error_message']}" if state['error_message'] else ""
     prompt = f"""You are a Senior SQL Architect. 
 USER REQUEST: {state['user_query']}
+ML MODEL DRAFT: {state['ml_draft_sql']}
 SCHEMA CONTEXT:
 {state['db_schema']}
 {error_feedback}
-{f'LOCAL DRAFT: {local_draft_sql}' if local_draft_sql else ''}
 
+Refine the SQL to be 100% accurate.
 Format:
 LOGIC_PATH: [Step-by-step logic]
 SQL: [Your PostgreSQL Query]
@@ -151,7 +158,7 @@ SQL: [Your PostgreSQL Query]
     return state
 
 def reflection_agent(state: MultiAgentState) -> MultiAgentState:
-    print("🔍 REFLECTION: Validating SQL...")
+    print("[REFLECTION] Auditing final SQL...")
     if not state.get('generated_sql'):
         state['next_agent'] = "reasoning"
         return state
@@ -172,7 +179,7 @@ def reflection_agent(state: MultiAgentState) -> MultiAgentState:
     return state
 
 def executor_agent(state: MultiAgentState) -> MultiAgentState:
-    print("⚡ EXECUTOR: Running SQL...")
+    print("[EXECUTOR] Running SQL...")
     sql = state.get('generated_sql', "").strip()
     if not sql:
         state['next_agent'] = "formatter"
@@ -194,39 +201,55 @@ def executor_agent(state: MultiAgentState) -> MultiAgentState:
     return state
 
 def formatter_agent(state: MultiAgentState) -> MultiAgentState:
-    print("📝 FORMATTER: Finalizing answer...")
+    print("[FORMATTER] Finalizing insight report...")
     if state['error_message'] and not state['query_results']:
-        state['final_answer'] = f"Error executing query: {state['error_message']}"
+        state['final_answer'] = f"The analysis hit a technical hurdle: {state['error_message']}"
         state['next_agent'] = END
         return state
     
-    prompt = f"Explain these results for the query: {state['user_query']}\nDATA: {str(state['query_results'][:2])}"
+    prompt = f"""You are a Senior Data Insight Strategist.
+The user asked: "{state['user_query']}"
+The data retrieved from the database: {str(state['query_results'][:5])}
+
+Your task is to write a high-impact, professional summary.
+1. DO NOT just list column names and values. 
+2. Identify the most important records or trends (e.g., "The top performer is...", "Most bookings were...").
+3. Use Markdown (bolding, bullet points) to make it scannable.
+4. Keep it concise (3-4 sentences max).
+5. Address the user's question directly and naturally.
+"""
     try:
         response = client.models.generate_content(model=MODEL_ID, contents=prompt)
-        state['final_answer'] = response.text
+        state['final_answer'] = response.text.strip()
     except:
-        state['final_answer'] = "Query successful. Results attached."
+        state['final_answer'] = "Data analysis complete. Insights are available in the preview table below."
     state['next_agent'] = END
     return state
 
 def create_multi_agent_graph():
     workflow = StateGraph(MultiAgentState)
+    
+    workflow.add_node("ml_model", ml_model_agent)
     workflow.add_node("supervisor", supervisor_agent)
     workflow.add_node("reasoning", reasoning_agent)
     workflow.add_node("reflection", reflection_agent)
     workflow.add_node("executor", executor_agent)
     workflow.add_node("formatter", formatter_agent)
-    workflow.set_entry_point("supervisor")
-    workflow.add_conditional_edges("supervisor", lambda x: x['next_agent'], {"reasoning": "reasoning", END: END})
+    
+    workflow.set_entry_point("ml_model")
+    
+    workflow.add_edge("ml_model", "supervisor")
+    workflow.add_conditional_edges("supervisor", lambda x: x['next_agent'], {"reasoning": "reasoning", "reflection": "reflection", END: END})
     workflow.add_conditional_edges("reasoning", lambda x: x['next_agent'], {"reflection": "reflection", END: END})
     workflow.add_conditional_edges("reflection", lambda x: x['next_agent'], {"reasoning": "reasoning", "executor": "executor", END: END})
     workflow.add_conditional_edges("executor", lambda x: x['next_agent'], {"reasoning": "reasoning", "formatter": "formatter", END: END})
     workflow.add_conditional_edges("formatter", lambda x: x['next_agent'], {END: END})
+    
     return workflow.compile()
 
 graph = create_multi_agent_graph()
 
-def run_multi_agent_query(query: str, schema: str, user_id: int = None) -> dict:
+def stream_multi_agent_query(query: str, schema: str, user_id: int = None):
     initial_state: MultiAgentState = {
         "user_query": query,
         "db_schema": schema,
@@ -241,10 +264,40 @@ def run_multi_agent_query(query: str, schema: str, user_id: int = None) -> dict:
         "error_message": "",
         "iteration_count": 0,
         "final_answer": "",
-        "next_agent": "supervisor",
+        "next_agent": "ml_model",
         "is_ambiguous": False,
         "potential_matches": [],
         "user_id": user_id,
-        "last_failed_sql": ""
+        "last_failed_sql": "",
+        "ml_draft_sql": ""
+    }
+    # Stream the graph execution
+    for chunk in graph.stream(initial_state):
+        if chunk:
+            agent_name = list(chunk.keys())[0]
+            yield agent_name, chunk[agent_name]
+
+def run_multi_agent_query(query: str, schema: str, user_id: int = None) -> dict:
+    # Maintain backwards compatibility or just use invoke
+    initial_state: MultiAgentState = {
+        "user_query": query,
+        "db_schema": schema,
+        "available_tables": [],
+        "target_tables": [],
+        "query_type": "single",
+        "query_plan": "",
+        "generated_sql": "",
+        "reflection_notes": "",
+        "query_results": [],
+        "query_columns": [],
+        "error_message": "",
+        "iteration_count": 0,
+        "final_answer": "",
+        "next_agent": "ml_model",
+        "is_ambiguous": False,
+        "potential_matches": [],
+        "user_id": user_id,
+        "last_failed_sql": "",
+        "ml_draft_sql": ""
     }
     return graph.invoke(initial_state)

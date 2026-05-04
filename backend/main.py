@@ -8,7 +8,7 @@ from typing import Annotated
 from backend.db import session as database
 from backend.core import auth
 from backend.agents import multi_agent
-from backend.db.models import User
+from backend.db.models import User, AnalysisLog
 from backend.core.config import settings
 
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -93,35 +93,102 @@ async def upload_file(
 async def get_schema(user: User = Depends(get_current_user)):
     return {"schema": database.fetch_db_schema(user.id)}
 
+@app.get("/history")
+async def get_history(user: User = Depends(get_current_user)):
+    db = database.get_db_session()
+    try:
+        logs = db.query(AnalysisLog).filter(AnalysisLog.user_id == user.id).order_by(AnalysisLog.created_at.desc()).all()
+        return [{
+            "id": log.id,
+            "query": log.query,
+            "sql": log.sql,
+            "answer": log.answer,
+            "timestamp": log.created_at.isoformat()
+        } for log in logs]
+    finally:
+        db.close()
+
+from fastapi.responses import StreamingResponse
+
 @app.post("/chat")
 async def chat(query: str = Form(...), user: User = Depends(get_current_user)):
     try:
         schema = database.fetch_db_schema(user.id)
-        result = multi_agent.run_multi_agent_query(query, schema, user.id)
         
-        if result.get('is_ambiguous'):
-            return {
-                "answer": "Multiple potential matches found. Please specify.",
-                "is_ambiguous": True,
-                "potential_matches": result.get('potential_matches', [])
+        async def event_generator():
+            final_state = {}
+            for agent_name, state in multi_agent.stream_multi_agent_query(query, schema, user.id):
+                final_state = state
+                # Send the current agent name to frontend
+                yield f"data: {json.dumps({'agent': agent_name})}\n\n"
+            
+            # Process final state results
+            datasets = []
+            for res in final_state.get('query_results', []):
+                cols = res.get('columns', [])
+                rows = res.get('rows', [])
+                datasets.append([dict(zip(cols, row)) for row in rows])
+
+            # Log to History at the end
+            db = database.get_db_session()
+            try:
+                from backend.db.models import AnalysisLog
+                new_log = AnalysisLog(
+                    user_id=user.id,
+                    query=query,
+                    sql=final_state.get('generated_sql'),
+                    answer=final_state.get('final_answer')
+                )
+                db.add(new_log)
+                db.commit()
+            except Exception as e:
+                print(f"History Log Error: {e}")
+                db.rollback()
+            finally:
+                db.close()
+
+            # Send final results
+            final_payload = {
+                "answer": final_state.get('final_answer'),
+                "sql": final_state.get('generated_sql'),
+                "ml_draft": final_state.get('ml_draft_sql'),
+                "data": datasets,
+                "plan": final_state.get('query_plan'),
+                "reflection": final_state.get('reflection_notes'),
+                "done": True
             }
+            yield f"data: {json.dumps(final_payload)}\n\n"
 
-        datasets = []
-        for res in result.get('query_results', []):
-            cols = res.get('columns', [])
-            rows = res.get('rows', [])
-            datasets.append([dict(zip(cols, row)) for row in rows])
+        return StreamingResponse(event_generator(), media_type="text/event-stream")
 
-        return {
-            "answer": result['final_answer'],
-            "sql": result.get('generated_sql'),
-            "data": datasets,
-            "plan": result.get('query_plan'),
-            "reflection": result.get('reflection_notes')
-        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/files")
+async def list_files(user: User = Depends(get_current_user)):
+    db = database.get_db_session()
+    try:
+        from backend.db.models import DynamicTable
+        tables = db.query(DynamicTable).filter(DynamicTable.user_id == user.id).all()
+        return [{
+            "name": t.original_filename,
+            "table": t.table_name,
+            "columns": t.columns_info,
+            "rows": t.row_count
+        } for t in tables]
+    finally:
+        db.close()
+
+@app.delete("/delete-table/{table_name}")
+async def delete_table(table_name: str, user: User = Depends(get_current_user)):
+    try:
+        success, message = database.delete_user_table(table_name, user.id)
+        if not success:
+            raise HTTPException(status_code=500, detail=message)
+        return {"message": message}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)
