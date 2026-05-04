@@ -15,6 +15,7 @@ import {
   X,
   Copy,
   Check,
+  Square,
   Clock
 } from 'lucide-react';
 import SoftAurora from '../components/SoftAurora/SoftAurora';
@@ -35,6 +36,7 @@ const Dashboard = () => {
   const [streamingAgent, setStreamingAgent] = useState(null);
   const [expandedMessages, setExpandedMessages] = useState(new Set());
   const [copiedSQL, setCopiedSQL] = useState(null);
+  const [abortController, setAbortController] = useState(null);
   const navigate = useNavigate();
   const chatEndRef = useRef(null);
 
@@ -158,6 +160,16 @@ const Dashboard = () => {
     setTimeout(() => setCopiedSQL(null), 2000);
   };
 
+  const handleStopQuery = () => {
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
+      setLoading(false);
+      setStreamingAgent(null);
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Query analysis terminated by user.', isError: true }]);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim() || loading) return;
 
@@ -167,6 +179,9 @@ const Dashboard = () => {
     setLoading(true);
     setStreamingAgent('INITIALIZING');
 
+    const controller = new AbortController();
+    setAbortController(controller);
+
     try {
       const formData = new FormData();
       formData.append('query', input);
@@ -174,7 +189,8 @@ const Dashboard = () => {
       const response = await fetch('http://localhost:8000/chat', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-        body: formData
+        body: formData,
+        signal: controller.signal
       });
 
       if (!response.ok) throw new Error("Connection interrupted");
@@ -216,10 +232,12 @@ const Dashboard = () => {
         }
       }
     } catch (err) {
+      if (err.name === 'AbortError') return;
       setMessages(prev => [...prev, { role: 'assistant', content: `System Error: ${err.message}`, isError: true }]);
       setStreamingAgent(null);
     } finally {
       setLoading(false);
+      setAbortController(null);
     }
   };
 
@@ -363,7 +381,12 @@ const Dashboard = () => {
                       onChange={(e) => handleInputChange(e.target.value)} 
                       onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} 
                     />
-                    <button className="db-send-btn" onClick={handleSendMessage} disabled={loading}><Send size={20} /></button>
+                    <button 
+                      className={`db-send-btn ${loading ? 'loading' : ''}`} 
+                      onClick={loading ? handleStopQuery : handleSendMessage}
+                    >
+                      {loading ? <Square size={20} fill="white" /> : <Send size={20} />}
+                    </button>
                   </div>
                 </div>
               </motion.div>
