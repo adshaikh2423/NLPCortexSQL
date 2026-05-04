@@ -187,11 +187,15 @@ NLPCortexSQL/
 
 ---
 
-## License & Credits
+## 👤 Author & Developer
 
-This project is developed as a next-generation AI data intelligence demonstration platform.
+**Lead Architect & Developer:** [adshaikh2423](https://github.com/adshaikh2423)
 
-**Lead Engineers:** Ahad & Karan
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 ---
 
