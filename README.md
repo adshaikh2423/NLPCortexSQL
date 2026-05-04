@@ -1,8 +1,10 @@
 <div align="center">
 
-<img src="https://img.shields.io/badge/NLPCortexSQL-Autonomous%20Data%20Intelligence-6C63FF?style=for-the-badge&logo=databricks&logoColor=white" alt="NLPCortexSQL" />
+<img src="frontend/public/logo.png" alt="CortexSQL Logo" width="120" />
 
-<br/>
+# CortexSQL
+### Autonomous Data Intelligence Engine
+
 <br/>
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
@@ -14,7 +16,7 @@
 
 <br/>
 
-> **NLPCortexSQL** — A professional-grade autonomous data intelligence platform that transforms natural language into precise PostgreSQL queries using a sophisticated multi-agent orchestration model.
+> **CortexSQL** — A professional-grade autonomous data intelligence platform that transforms natural language into precise PostgreSQL queries using a sophisticated multi-agent orchestration model.
 
 </div>
 
@@ -37,13 +39,13 @@
 
 ## Overview
 
-**NLPCortexSQL** is engineered for scale and precision. Unlike simple NL2SQL scripts, it utilizes **LangGraph** to coordinate a team of specialized AI agents that navigate complex schemas, identify analytical trends, and self-heal from execution errors — delivering enterprise-grade intelligence directly from natural language.
+**CortexSQL** is engineered for scale and precision. Unlike simple NL2SQL scripts, it utilizes **LangGraph** to coordinate a team of specialized AI agents that navigate complex schemas, identify analytical trends, and self-heal from execution errors — delivering enterprise-grade intelligence directly from natural language.
 
 ---
 
 ## The Multi-Agent Intelligence Layer
 
-NLPCortexSQL orchestrates a **pipeline of five specialized agents**, each with a distinct role in transforming language into insight:
+CortexSQL orchestrates a **pipeline of five specialized agents**, each with a distinct role in transforming language into insight:
 
 ### 1. Supervisor — Semantic Filter
 
