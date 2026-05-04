@@ -189,7 +189,7 @@ NLPCortexSQL/
 
 ## 👤 Author & Developer
 
-**Lead Architect & Developer:** [adshaikh2423](https://github.com/adshaikh2423)
+**Lead Architect & Developer:** [Karan Shelar](https://github.com/Edge-Explorer)
 
 ---
 
