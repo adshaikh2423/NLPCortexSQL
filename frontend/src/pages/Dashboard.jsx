@@ -287,8 +287,8 @@ const Dashboard = () => {
                         )}
                         {msg.agents && msg.agents.length > 0 && (
                           <div className="db-message-agents">
-                            <span className="agent-badge ml"><Cpu size={12}/> Cortex-ML (Lead)</span>
-                            {msg.agents.map(a => <span key={a} className="agent-badge"><Cpu size={12}/> {a}</span>)}
+                            <span className="agent-badge ml">Cortex-ML (Lead)</span>
+                            {msg.agents.map(a => <span key={a} className="agent-badge">{a}</span>)}
                           </div>
                         )}
                       </div>
