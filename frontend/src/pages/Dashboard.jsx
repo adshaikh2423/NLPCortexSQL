@@ -388,6 +388,9 @@ const Dashboard = () => {
                       {loading ? <Square size={20} fill="white" /> : <Send size={20} />}
                     </button>
                   </div>
+                  <div className="db-chat-disclaimer">
+                    Cortex-ML is an autonomous analytical engine; generated insights and SQL queries should be verified for critical decision-making.
+                  </div>
                 </div>
               </motion.div>
             )}

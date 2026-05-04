@@ -869,3 +869,15 @@
   color: #fff;
   border-color: rgba(255, 255, 255, 0.3);
 }
+
+.db-chat-disclaimer {
+  text-align: center;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 12px;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  letter-spacing: 0.3px;
+  pointer-events: none;
+}
