@@ -170,6 +170,21 @@
   gap: 20px;
   max-width: 1000px;
   margin: 0 auto;
+  position: relative;
+}
+
+.chat-watermark {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  height: 400px;
+  object-fit: contain;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+  filter: grayscale(100%);
 }
 
 .db-messages-container {

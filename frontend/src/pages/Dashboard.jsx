@@ -294,6 +294,7 @@ const Dashboard = () => {
           <AnimatePresence mode="wait">
             {activeTab === 'chat' && (
               <motion.div key="chat" className="db-chat-view" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+                <img src="/logo.png" alt="" className="chat-watermark" aria-hidden="true" />
                 <div className="db-messages-container">
                   {messages.map((msg, i) => (
                     <div key={i} className={`db-message ${msg.role}`}>
