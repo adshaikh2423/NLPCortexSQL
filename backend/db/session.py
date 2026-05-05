@@ -153,8 +153,10 @@ def delete_user_table(table_name, user_id):
             return False, "Table not found or access denied."
         
         # Drop the actual table
+        from sqlalchemy import text
         with engine.connect() as conn:
-            conn.execute(f'DROP TABLE IF EXISTS "{table_name}"')
+            conn.execute(text(f'DROP TABLE IF EXISTS "{table_name}" CASCADE'))
+            conn.commit()
         
         # Remove metadata
         session.delete(table_meta)
