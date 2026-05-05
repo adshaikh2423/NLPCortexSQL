@@ -18,22 +18,29 @@ client = genai.Client(api_key=settings.GEMINI_API_KEY)
 MODEL_ID = settings.MODEL_ID
 
 # ============================================================================
-# LOCAL ML MODEL INITIALIZATION
+# LOCAL ML MODEL INITIALIZATION (Hardware Aware)
 # ============================================================================
 LOCAL_MODEL_READY = False
 local_tokenizer = None
 local_model = None
+
+# Detect GPU availability - avoid CPU loading for heavy T5 models
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 try:
     current_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(os.path.dirname(current_dir), "fine_tuned_sql_model")
     
     if os.path.exists(model_path) and os.path.isdir(model_path):
-        print(f"Loading Local ML Model from: {os.path.basename(model_path)}...")
-        local_tokenizer = T5Tokenizer.from_pretrained(model_path)
-        local_model = T5ForConditionalGeneration.from_pretrained(model_path)
-        LOCAL_MODEL_READY = True
-        print("Local Model Loaded and Ready.")
+        if DEVICE == "cuda":
+            print(f"Loading Local ML Model on GPU: {os.path.basename(model_path)}...")
+            local_tokenizer = T5Tokenizer.from_pretrained(model_path)
+            local_model = T5ForConditionalGeneration.from_pretrained(model_path).to(DEVICE)
+            LOCAL_MODEL_READY = True
+            print("Local Model Loaded and Ready on GPU.")
+        else:
+            print("GPU (CUDA) not detected. Bypassing local ML model to ensure high-speed cloud orchestration.")
+            LOCAL_MODEL_READY = False
 except Exception as e:
     print(f"Local model initialization skipped: {e}")
 
