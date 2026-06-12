@@ -167,7 +167,11 @@ SQL: [Your PostgreSQL Query]
 def reflection_agent(state: MultiAgentState) -> MultiAgentState:
     print("[REFLECTION] Auditing final SQL...")
     if not state.get('generated_sql'):
-        state['next_agent'] = "reasoning"
+        if state['iteration_count'] < 3:
+            state['iteration_count'] += 1
+            state['next_agent'] = "reasoning"
+        else:
+            state['next_agent'] = "executor"
         return state
     prompt = f"Validate this SQL against the schema. SQL: {state['generated_sql']}\nSCHEMA: {state['db_schema']}\nReturn APPROVED or NEEDS_REVISION with critique."
     try:
