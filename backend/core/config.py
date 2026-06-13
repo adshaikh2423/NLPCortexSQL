@@ -10,6 +10,6 @@ class Settings:
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-super-secret-key-12345")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24  # 24 hours
-    MODEL_ID: str = "gemini-2.0-flash"
+    MODEL_ID: str = os.getenv("MODEL_ID", "gemini-2.5-flash")
 
 settings = Settings()

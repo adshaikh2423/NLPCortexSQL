@@ -10,7 +10,7 @@
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-v0.109.0-059669?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Gemini](https://img.shields.io/badge/Google_GenAI-Gemini_2.0_Flash-orange?logo=google&logoColor=white)](https://aistudio.google.com/)
+[![Gemini](https://img.shields.io/badge/Google_GenAI-Gemini_2.5_Flash-orange?logo=google&logoColor=white)](https://aistudio.google.com/)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Fine--tuned%20T5-yellow)](https://huggingface.co/Karan6124/t5-nl2sql-gen)
 [![License](https://img.shields.io/badge/License-MIT-green?logo=opensourceinitiative&logoColor=white)](./LICENSE)
 
@@ -76,7 +76,7 @@ The data analyst of the pipeline. Doesn't just list rows — performs **Analytic
 
 | Feature | Description |
 |---|---|
-| **Hybrid Intelligence** | Seamlessly blends a local fine-tuned ML model with Gemini 2.0 Flash for maximum speed and accuracy |
+| **Hybrid Intelligence** | Seamlessly blends a local fine-tuned ML model with Gemini 2.5 Flash for maximum speed and accuracy |
 | **Semantic Knowledge Mapping** | Upload a CSV or Excel file and the AI instantly maps the entire schema into its neural memory |
 | **Security Layer** | Enterprise-grade JWT authentication and bcrypt password encryption ensure data remains isolated and secure |
 | **Premium Workspace** | A glassmorphic UI featuring real-time AI thought visualization, technical detail expansion, and automated system clock synchronization |
@@ -91,7 +91,7 @@ The data analyst of the pipeline. Doesn't just list rows — performs **Analytic
 |---|---|
 | **Core Engine** | FastAPI (Python 3.11) |
 | **Agentic Framework** | LangGraph / LangChain |
-| **Primary LLM** | Google Gemini 2.0 Flash |
+| **Primary LLM** | Google Gemini 2.5 Flash |
 | **Local Model** | [Fine-tuned T5-Small](https://huggingface.co/Karan6124/t5-nl2sql-gen) |
 | **Frontend** | React 19 + Framer Motion |
 | **Styling** | Vanilla CSS + Tailwind v4 (Beta) |
@@ -201,7 +201,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 <div align="center">
 
-Built with **LangGraph**, **Gemini 2.0 Flash**, and **FastAPI**
+Built with **LangGraph**, **Gemini 2.5 Flash**, and **FastAPI**
 
 <br/>
 
